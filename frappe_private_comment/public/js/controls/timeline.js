@@ -102,6 +102,9 @@ function update_time_line(time_line_item) {
     time_line_item.querySelector(".timeline-comment").remove();
     time_line_item.querySelector(".custom-actions").classList.remove("save-open");
   });
+
+  // Add reply button
+  add_reply_button(time_line_item);
 }
 
 function button_override(time_line_item, button) {
@@ -113,19 +116,28 @@ function button_override(time_line_item, button) {
 }
 
 function handle_save(time_line_item, button) {
-  frappe.call({
-    method: "frappe.desk.form.utils.update_comment",
-    args: {
-      name: time_line_item.dataset.name,
-      content: time_line_item.querySelector(".comment-edit-box .ql-editor").innerHTML,
-      custom_visibility: time_line_item.querySelector("#visibility").value,
-    },
-    callback: () => {
-      time_line_item.querySelector(".timeline-comment").remove();
-      time_line_item.querySelector(".custom-actions").classList.remove("save-open");
-      update_time_line(time_line_item);
-    },
-  });
+  this.frm.comment_box.disable();
+  frappe
+    .xcall("frappe.desk.form.utils.add_comment", {
+      reference_doctype: this.frm.doctype,
+      reference_name: this.frm.docname,
+      content: comment,
+      comment_email: frappe.session.user,
+      comment_by: frappe.session.user_fullname,
+      custom_visibility: custom_visibility,
+    })
+    .then((comment) => {
+      let comment_item = this.frm.timeline.get_comment_timeline_item(comment);
+      this.frm.comment_box.set_value("");
+      frappe.utils.play_sound("click");
+      this.frm.timeline.add_timeline_item(comment_item);
+      this.frm.sidebar.refresh_comments_count && this.frm.sidebar.refresh_comments_count();
+    })
+    .finally(() => {
+      this.frm.comment_box.enable();
+      update_comments_timeline();
+    });
+  this.refresh();
 }
 
 function handle_edit(time_line_item, button) {
@@ -164,4 +176,80 @@ function get_input_html(time_line_item) {
   });
 
   return div;
+}
+
+function add_reply_button(time_line_item) {
+  const replyButton = $("<button>")
+    .addClass("btn btn-xs btn-link reply-btn")
+    .html('<i class="fa fa-reply"></i> Reply')
+    .on("click", () => handle_reply(time_line_item));
+
+  $(time_line_item).find(".custom-actions").prepend(replyButton);
+}
+
+function handle_reply(time_line_item) {
+  const commentContent = $(time_line_item).find(".read-mode > p").text();
+  const quotedComment = `> ${commentContent.replace(/\n/g, "\n> ")}`;
+
+  const commentBox = $(time_line_item).find(".comment-edit-box");
+
+  if (!commentBox.length) {
+    console.error("Comment box not found");
+    return;
+  }
+
+  commentBox.css("display", "block");
+  commentBox.empty();
+
+  const replyEditBox = $("<div>").addClass("reply-edit-box").html(`
+      <div class="ql-container ql-snow">
+        <div class="ql-editor" contenteditable="true">
+          <br><br>${quotedComment}<br>
+        </div>
+      </div>
+      <div class="reply-actions">
+        <button class="btn btn-sm btn-primary submit-reply">Submit Reply</button>
+        <button class="btn btn-sm btn-default cancel-reply">Cancel</button>
+      </div>
+    `);
+
+  commentBox.append(replyEditBox);
+
+  replyEditBox.find(".ql-editor").focus();
+
+  replyEditBox.find(".submit-reply").on("click", () => {
+    const replyContent = replyEditBox.find(".ql-editor").html();
+    submit_reply(time_line_item, replyContent);
+  });
+
+  replyEditBox.find(".cancel-reply").on("click", () => {
+    commentBox.empty().css("display", "none");
+  });
+
+  // Scroll to the comment box
+  $("html, body").animate(
+    {
+      scrollTop: commentBox.offset().top - $(window).height() / 2,
+    },
+    1000
+  );
+}
+
+function submit_reply(time_line_item, content) {
+  frappe.call({
+    method: "frappe.desk.form.utils.add_comment",
+    args: {
+      reference_doctype: $(time_line_item).data("doctype"),
+      reference_name: $(time_line_item).data("name"),
+      content: content,
+      comment_email: frappe.session.user,
+      comment_by: frappe.session.user_fullname,
+    },
+    callback: (r) => {
+      if (r.message) {
+        $(time_line_item).find(".comment-edit-box").empty().css("display", "none");
+        update_comments_timeline();
+      }
+    },
+  });
 }
