@@ -82,3 +82,13 @@ def get_comment_visibility(name: str):
         return None
 
     return {"custom_visibility": doc.custom_visibility}
+
+
+@frappe.whitelist()
+def get_comment_replies(comment_id: str):
+    """Get comment replies"""
+    return frappe.get_all(
+        "Comment",
+        filters={"reference_doctype": "Comment", "reference_name": comment_id},
+        fields=["name", "content", "comment_by", "creation"],
+    )

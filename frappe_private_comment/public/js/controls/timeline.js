@@ -1,3 +1,63 @@
+function addThreadedReply(commentSelector) {
+  const $comment = $(commentSelector);
+  const commentId = $comment.data("name");
+
+  frappe.call({
+    method: "frappe_private_comment.overrides.whitelist.comment.get_comment_replies",
+    args: {
+      comment_id: commentId,
+    },
+    callback: (res) => {
+      if (res.exc) {
+        console.error(res.exc);
+        return;
+      }
+
+      if (!res.message || !res.message.length) {
+        // No replies found
+        return;
+      }
+
+      const $replyContainer = $(
+        '<div class="threaded-reply-container " style="margin-left: 90px; position: relative;"></div>'
+      );
+
+      // Add vertical line
+      $replyContainer.append(
+        '<div class="vertical-line" style="position: absolute; left: -30px; top: 0; bottom: 0; width: 1px; background-color: #d1d8dd;"></div>'
+      );
+
+      res.message.forEach((reply) => {
+        const $replyContent = $(`
+                    <div class="timeline-badge" style="position: absolute; left: -43px; top: 10px; background-color: #F3F3F3; padding: 5px; border-radius: 999px;">
+                        <svg class="icon icon-md">
+                            <use href="#icon-small-message"></use>
+                        </svg>
+                    </div>
+                    <div class="timeline-item frappe-card" data-doctype="Comment" style="position: relative;">
+                        <div class="timeline-content ">
+                            <div class="timeline-message-box">
+                                <span class="text-muted">
+                                    ${frappe.avatar(frappe.session.user, "avatar-medium")}
+                                    <span class="timeline-user">${reply.comment_by}</span>
+                                    <span> • ${frappe.datetime.comment_when(reply.creation)}</span>
+                                </span> <hr />
+                                <div class="read-mode">
+                                    <p>${reply.content}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `);
+
+        $replyContainer.append($replyContent);
+      });
+
+      $comment.after($replyContainer);
+    },
+  });
+}
+
 /**Enable the HTML Editor field preview mode by default using the provided function */
 const time_line_interval_loop = setInterval(() => {
   let html_time_line_item = document.querySelectorAll(".new-timeline > .timeline-items .timeline-item");
@@ -46,6 +106,8 @@ function add_visibility_icons(time_line_item, visibility) {
 
   time_line_item.querySelector(".timeline-message-box > span > span > span").innerHTML +=
     update_the_comment_visibility(visibility);
+
+  addThreadedReply(time_line_item);
 }
 
 function update_comments_timeline() {
