@@ -18,6 +18,9 @@ function addThreadedReply(commentSelector) {
         return;
       }
 
+      const $prevContainer = $comment.next(".threaded-reply-container");
+      $prevContainer && $prevContainer.remove();
+
       const $replyContainer = $(
         '<div class="threaded-reply-container " style="margin-left: 90px; position: relative;"></div>'
       );
@@ -29,28 +32,41 @@ function addThreadedReply(commentSelector) {
 
       res.message.forEach((reply) => {
         const $replyContent = $(`
-                    <div class="timeline-badge" style="position: absolute; left: -43px; top: 10px; background-color: #F3F3F3; padding: 5px; border-radius: 999px;">
-                        <svg class="icon icon-md">
-                            <use href="#icon-small-message"></use>
-                        </svg>
-                    </div>
-                    <div class="timeline-item frappe-card" data-doctype="Comment" style="position: relative;">
-                        <div class="timeline-content ">
-                            <div class="timeline-message-box">
-                                <span class="text-muted">
-                                    ${frappe.avatar(frappe.session.user, "avatar-medium")}
-                                    <span class="timeline-user">${reply.comment_by}</span>
-                                    <span> • ${frappe.datetime.comment_when(reply.creation)}</span>
-                                </span> <hr />
-                                <div class="read-mode">
-                                    <p>${reply.content}</p>
-                                </div>
-                            </div>
+          <div style="position: relative;">
+            <div class="timeline-badge" style="position: absolute; left: -43px; top: 10px; background-color: #F3F3F3; padding: 5px; border-radius: 999px;">
+                <svg class="icon icon-md">
+                    <use href="#icon-small-message"></use>
+                </svg>
+            </div>
+            <div class="timeline-item frappe-card" data-doctype="Comment" style="position: relative; max-width: 700px">
+                <div class="timeline-content">
+                    <div class="timeline-message-box">
+                        <span class="text-muted">
+                            ${frappe.avatar(frappe.session.user, "avatar-medium")}
+                            <span class="timeline-user">${reply.comment_by}</span>
+                            <span> • ${frappe.datetime.comment_when(reply.creation)}</span>
+                        </span> <hr />
+                        <div class="read-mode">
+                            <p>${reply.content}</p>
                         </div>
                     </div>
+                </div>
+            </div>
+          </div>
                 `);
 
         $replyContainer.append($replyContent);
+
+        const replyButton = $("<button>")
+          .addClass("btn btn-xs btn-link reply-btn")
+          .css({
+            float: "right",
+            marginLeft: "auto",
+          })
+          .html('<i class="fa fa-reply"></i> Reply')
+          .on("click", () => handle_reply(commentSelector));
+
+        $replyContent.find(".text-muted").append(replyButton);
       });
 
       $comment.after($replyContainer);
@@ -250,9 +266,6 @@ function add_reply_button(time_line_item) {
 }
 
 function handle_reply(time_line_item) {
-  const commentContent = $(time_line_item).find(".read-mode > p").text();
-  const quotedComment = `> ${commentContent.replace(/\n/g, "\n> ")}`;
-
   const commentBox = $(time_line_item).find(".comment-edit-box");
 
   if (!commentBox.length) {
@@ -266,7 +279,6 @@ function handle_reply(time_line_item) {
   const replyEditBox = $("<div>").addClass("reply-edit-box").html(`
       <div class="ql-container ql-snow">
         <div class="ql-editor" contenteditable="true">
-          <br><br>${quotedComment}<br>
         </div>
       </div>
       <div class="reply-actions">
@@ -310,7 +322,9 @@ function submit_reply(time_line_item, content) {
     callback: (r) => {
       if (r.message) {
         $(time_line_item).find(".comment-edit-box").empty().css("display", "none");
+        frappe.utils.play_sound("click");
         update_comments_timeline();
+        addThreadedReply(time_line_item);
       }
     },
   });
