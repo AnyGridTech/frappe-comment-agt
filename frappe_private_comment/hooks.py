@@ -152,6 +152,21 @@ override_doctype_class = {
 # 	],
 # }
 
+# Fixtures
+# ----------
+fixtures = [
+    {
+        "dt": "Custom Field",
+        "filters": [
+            [
+                "dt",
+                "in",
+                ["Comment"],
+            ]
+        ],
+    },
+]
+
 # Testing
 # -------
 
