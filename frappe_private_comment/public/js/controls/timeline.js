@@ -38,14 +38,17 @@ function addThreadedReply(commentSelector) {
                     <use href="#icon-small-message"></use>
                 </svg>
             </div>
-            <div class="timeline-item frappe-card" data-doctype="Comment" style="position: relative; max-width: 700px">
+            <div class="timeline-item frappe-card" data-doctype="Comment" style="position: relative; background-color: #F7F7F7; max-width: 700px">
                 <div class="timeline-content">
                     <div class="timeline-message-box">
                         <span class="text-muted">
                             ${frappe.avatar(frappe.session.user, "avatar-medium")}
-                            <span class="timeline-user">${reply.comment_by}</span>
-                            <span> • ${frappe.datetime.comment_when(reply.creation)}</span>
-                        </span> <hr />
+                            <span class="timeline-user">${
+                              reply.comment_by === frappe.session.user ? "You" : reply.comment_by
+                            } commented . </span>
+                            <span>&nbsp; ${frappe.datetime.comment_when(reply.creation)}</span>
+                        </span>
+                    <span>${update_the_comment_visibility(true)}</span><hr />
                         <div class="read-mode">
                             <p>${reply.content}</p>
                         </div>
@@ -278,11 +281,11 @@ function handle_reply(time_line_item) {
 
   const replyEditBox = $("<div>").addClass("reply-edit-box").html(`
       <div class="ql-container ql-snow">
-        <div class="ql-editor" contenteditable="true">
+        <div class="ql-editor" contenteditable="true" style="max-height: 40px;">
         </div>
       </div>
-      <div class="reply-actions">
-        <button class="btn btn-sm btn-primary submit-reply">Submit Reply</button>
+      <div class="reply-actions" style="background-color: white; padding: 4px;">
+        <button class="btn btn-sm btn-primary submit-reply">Submit</button>
         <button class="btn btn-sm btn-default cancel-reply">Cancel</button>
       </div>
     `);
