@@ -18,6 +18,7 @@ def add_comment_override(
     comment_email: str,
     comment_by: str,
     custom_visibility: str = "Visible to everyone",
+    custom_reply_to: str | None = None,
 ) -> "Comment":
     """Allow logged user with permission to read document to add a comment"""
     reference_doc = frappe.get_doc(reference_doctype, reference_name)
@@ -34,6 +35,7 @@ def add_comment_override(
             "content": extract_images_from_html(reference_doc, content, is_private=True),
             "custom_visibility": custom_visibility,
             "custom_mentions": get_mention_user(content),
+            "custom_reply_to": custom_reply_to,
         }
     )
     comment.insert(ignore_permissions=True)
@@ -85,10 +87,37 @@ def get_comment_visibility(name: str):
 
 
 @frappe.whitelist()
-def get_comment_replies(comment_id: str):
+def get_comment_replies(reference_doctype: str, comment_id: str):
     """Get comment replies"""
     return frappe.get_all(
         "Comment",
-        filters={"reference_doctype": "Comment", "reference_name": comment_id},
+        filters={
+            "reference_doctype": reference_doctype,
+            "custom_reply_to": comment_id,
+        },
         fields=["name", "content", "comment_by", "creation"],
     )
+
+
+@frappe.whitelist()
+def get_all_replies(reference_doctype: str, reference_name: str):
+    """Get all replies for a comment in a structured format"""
+    replies = frappe.get_all(
+        "Comment",
+        filters={
+            "reference_doctype": reference_doctype,
+            "reference_name": reference_name,
+        },
+        fields=["name", "content", "comment_by", "creation", "custom_reply_to"],
+    )
+
+    # Create a dictionary to store the structured comments
+    structured_comments = dict()
+
+    for reply in replies:
+        if reply["custom_reply_to"] is None:
+            structured_comments.setdefault(reply["name"], [])
+        structured_comments.setdefault(reply["custom_reply_to"], [])
+        structured_comments[reply["custom_reply_to"]].append(reply)
+
+    return structured_comments
