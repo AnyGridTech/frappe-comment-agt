@@ -12,7 +12,10 @@ app_license = "GNU AFFERO GENERAL PUBLIC LICENSE (v3)"
 
 # include js, css files in header of desk.html
 app_include_css = "/assets/frappe_private_comment/css/frappe_private_comment.css"
-app_include_js = "/assets/frappe_private_comment/js/frappe_private_comment.js"
+app_include_js = [
+    "/assets/frappe_private_comment/js/frappe_private_comment.js",
+    "footer.bundle.js",
+]
 
 # include js, css files in header of web template
 # web_include_css = "/assets/frappe_private_comment/css/frappe_private_comment.css"

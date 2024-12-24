@@ -1,4 +1,35 @@
-// eslint-disable-next-line
+// NOTE: run `bench build` after making changes to this file
+import FormTimeline from "frappe/public/js/frappe/form/footer/form_timeline.js";
+
+class CustomFormTimeline extends FormTimeline {
+  constructor(opts, refresh_callback) {
+    super(opts);
+    console.log(refresh_callback);
+    this.refresh_callback = refresh_callback;
+  }
+
+  update_comment(name, content) {
+    return frappe.xcall("frappe.desk.form.utils.update_comment", { name, content }).then(() => {
+      frappe.utils.play_sound("click");
+      this.refresh_callback();
+    });
+  }
+
+  delete_comment(comment_name) {
+    frappe.confirm(__("Delete comment?"), () => {
+      return frappe
+        .xcall("frappe.client.delete", {
+          doctype: "Comment",
+          name: comment_name,
+        })
+        .then(() => {
+          frappe.utils.play_sound("delete");
+          this.refresh_callback();
+        });
+    });
+  }
+}
+
 frappe.ui.form.Footer = class extends frappe.ui.form.Footer {
   constructor(opts) {
     super(opts);
@@ -6,6 +37,16 @@ frappe.ui.form.Footer = class extends frappe.ui.form.Footer {
     $(this.frm.wrapper).on("render_complete", () => {
       this.setup_replies();
     });
+  }
+
+  make_timeline() {
+    this.frm.timeline = new CustomFormTimeline(
+      {
+        parent: this.wrapper.find(".timeline"),
+        frm: this.frm,
+      },
+      this.setup_replies
+    );
   }
 
   make_comment_box() {
