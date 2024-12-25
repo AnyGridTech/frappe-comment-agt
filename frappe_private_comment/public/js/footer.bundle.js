@@ -1,10 +1,10 @@
 // NOTE: run `bench build` after making changes to this file
+// alternatively, run `bench watch` to automatically build on file changes
 import FormTimeline from "frappe/public/js/frappe/form/footer/form_timeline.js";
 
 class CustomFormTimeline extends FormTimeline {
   constructor(opts, refresh_callback) {
     super(opts);
-    console.log(refresh_callback);
     this.refresh_callback = refresh_callback;
   }
 
