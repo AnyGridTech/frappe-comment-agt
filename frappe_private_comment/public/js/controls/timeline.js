@@ -104,9 +104,6 @@ function update_time_line(time_line_item) {
     time_line_item.querySelector(".timeline-comment").remove();
     time_line_item.querySelector(".custom-actions").classList.remove("save-open");
   });
-
-  // Add reply button
-  add_reply_button(time_line_item);
 }
 
 function button_override(time_line_item, button) {
@@ -118,28 +115,19 @@ function button_override(time_line_item, button) {
 }
 
 function handle_save(time_line_item, button) {
-  this.frm.comment_box.disable();
-  frappe
-    .xcall("frappe.desk.form.utils.add_comment", {
-      reference_doctype: this.frm.doctype,
-      reference_name: this.frm.docname,
-      content: comment,
-      comment_email: frappe.session.user,
-      comment_by: frappe.session.user_fullname,
-      custom_visibility: custom_visibility,
-    })
-    .then((comment) => {
-      let comment_item = this.frm.timeline.get_comment_timeline_item(comment);
-      this.frm.comment_box.set_value("");
-      frappe.utils.play_sound("click");
-      this.frm.timeline.add_timeline_item(comment_item);
-      this.frm.sidebar.refresh_comments_count && this.frm.sidebar.refresh_comments_count();
-    })
-    .finally(() => {
-      this.frm.comment_box.enable();
-      update_comments_timeline();
-    });
-  this.refresh();
+  frappe.call({
+    method: "frappe.desk.form.utils.update_comment",
+    args: {
+      name: time_line_item.dataset.name,
+      content: time_line_item.querySelector(".comment-edit-box .ql-editor").innerHTML,
+      custom_visibility: time_line_item.querySelector("#visibility").value,
+    },
+    callback: () => {
+      time_line_item.querySelector(".timeline-comment").remove();
+      time_line_item.querySelector(".custom-actions").classList.remove("save-open");
+      update_time_line(time_line_item);
+    },
+  });
 }
 
 function handle_edit(time_line_item, button) {

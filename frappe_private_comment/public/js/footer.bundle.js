@@ -123,6 +123,7 @@ frappe.ui.form.Footer = class extends frappe.ui.form.Footer {
             return;
           }
 
+          add_reply_button($item);
           if (!replies || replies.length === 0) return;
           render_replies($item, replies);
         });

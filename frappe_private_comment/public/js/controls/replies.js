@@ -1,3 +1,16 @@
+function add_reply_button(time_line_item) {
+  // if reply button already exists, return
+  if ($(time_line_item).find(".custom-actions .reply-btn").length) {
+    return;
+  }
+  const replyButton = $("<button>")
+    .addClass("btn btn-xs btn-link reply-btn")
+    .html('<i class="fa fa-reply"></i> Reply')
+    .on("click", () => handle_reply(time_line_item));
+
+  $(time_line_item).find(".custom-actions").append(replyButton);
+}
+
 function render_replies(commentSelector, replies) {
   const $comment = $(commentSelector);
   const $prevContainer = $comment.next(".threaded-reply-container");
@@ -80,15 +93,6 @@ function addThreadedReply(commentSelector, doctype) {
       render_replies(commentSelector, res.message);
     },
   });
-}
-
-function add_reply_button(time_line_item) {
-  const replyButton = $("<button>")
-    .addClass("btn btn-xs btn-link reply-btn")
-    .html('<i class="fa fa-reply"></i> Reply')
-    .on("click", () => handle_reply(time_line_item));
-
-  $(time_line_item).find(".custom-actions").prepend(replyButton);
 }
 
 function handle_reply(time_line_item) {
