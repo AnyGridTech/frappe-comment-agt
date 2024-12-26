@@ -50,6 +50,13 @@ function render_replies(commentSelector, replies) {
                             <div class="read-mode">
                                 <p>${reply.content}</p>
                             </div>
+                            <div class="edit-mode" style="display: none;">
+                            <textarea class="form-control edit-textarea" rows="3">${reply.content}</textarea>
+                            <div class="mt-2">
+                              <button class="btn btn-sm btn-primary save-edit">Save</button>
+                              <button class="btn btn-sm btn-default cancel-edit">Cancel</button>
+                            </div>
+                          </div>
                         </div>
                     </div>
                 </div>
@@ -100,7 +107,7 @@ function render_replies(commentSelector, replies) {
     const editButton = $("<button>")
       .addClass("btn btn-xs btn-link small")
       .html("Edit")
-      .on("click", () => handle_reply_edit(commentSelector));
+      .on("click", () => handle_reply_edit(commentSelector, "#comment-" + reply.name));
 
     moreButton.append(dropdownMenu);
     actionButtons.append(editButton, replyButton, moreButton);
@@ -235,5 +242,49 @@ function handle_reply_delete(commentSelector) {
         }
       },
     });
+  });
+}
+
+function handle_reply_edit(parentComment, commentSelector) {
+  const $comment = $(commentSelector);
+  const $readMode = $comment.find(".read-mode");
+  const $editMode = $comment.find(".edit-mode");
+  const commentId = $comment.data("name");
+  const doctype = this.cur_frm.doctype;
+
+  $readMode.hide();
+  $editMode.show();
+
+  $editMode.find(".save-edit").on("click", function () {
+    const newContent = $editMode.find(".edit-textarea").val();
+    frappe.call({
+      method: "frappe.client.set_value",
+      args: {
+        doctype: "Comment",
+        name: commentId,
+        fieldname: "content",
+        value: newContent,
+      },
+      callback: function (r) {
+        if (!r.exc) {
+          $comment.find(".comment-content").html(newContent);
+          $comment.find(".edit-mode").hide();
+          $comment.find(".read-mode").show();
+
+          addThreadedReply(parentComment, doctype);
+          frappe.show_alert({
+            message: __("Comment updated"),
+            indicator: "green",
+          });
+        } else {
+          frappe.msgprint(__("There was an error updating the comment"));
+        }
+      },
+    });
+  });
+
+  $editMode.find(".cancel-edit").on("click", function () {
+    $editMode.hide();
+    $readMode.show();
   });
 }
