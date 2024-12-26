@@ -5,6 +5,7 @@ function add_reply_button(time_line_item) {
   }
   const replyButton = $("<button>")
     .addClass("btn btn-xs btn-link reply-btn")
+    .css({ "font-size": "12px" })
     .html('<i class="fa fa-reply"></i> Reply')
     .on("click", () => handle_reply(time_line_item));
 
@@ -27,45 +28,85 @@ function render_replies(commentSelector, replies) {
 
   replies.forEach((reply) => {
     const $replyContent = $(`
-          <div style="position: relative;">
-            <div class="timeline-badge" style="position: absolute; left: -43px; top: 10px; background-color: #F3F3F3; padding: 5px; border-radius: 999px;">
-                <svg class="icon icon-md">
-                    <use href="#icon-small-message"></use>
-                </svg>
-            </div>
-            <div class="timeline-item frappe-card" data-doctype="Comment" style="position: relative; background-color: #F7F7F7; max-width: 700px">
-                <div class="timeline-content">
-                    <div class="timeline-message-box">
-                        <span class="text-muted">
-                            ${frappe.avatar(frappe.session.user, "avatar-medium")}
-                            <span class="timeline-user">${
-                              reply.comment_by === frappe.session.user ? "You" : reply.comment_by
-                            } commented . </span>
-                            <span>&nbsp; ${frappe.datetime.comment_when(reply.creation)}</span>
-                        </span>
-                    <span>${update_the_comment_visibility(true)}</span><hr />
-                        <div class="read-mode">
-                            <p>${reply.content}</p>
+            <div style="position: relative;">
+                <div class="timeline-badge" style="position: absolute; left: -43px; top: 10px; background-color: #F3F3F3; padding: 5px; border-radius: 999px;">
+                    <svg class="icon icon-md">
+                        <use href="#icon-small-message"></use>
+                    </svg>
+                </div>
+                <div class="timeline-item frappe-card" data-doctype="Comment" id="comment-${reply.name}" data-name="${
+      reply.name
+    }" style="position: relative; background-color: #F7F7F7; max-width: 700px">
+                    <div class="timeline-content">
+                        <div class="timeline-message-box">
+                            <span class="text-muted">
+                                ${frappe.avatar(frappe.session.user, "avatar-medium")}
+                                <span class="timeline-user">${
+                                  reply.comment_by === frappe.session.user ? "You" : reply.comment_by
+                                } commented . </span>
+                                <span>&nbsp; ${frappe.datetime.comment_when(reply.creation)}</span>
+                            </span>
+                            <span>${update_the_comment_visibility(true)}</span><hr />
+                            <div class="read-mode">
+                                <p>${reply.content}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-          </div>
-                `);
+        `);
 
     $replyContainer.append($replyContent);
 
+    const actionButtons = $("<div>").addClass("comment-actions").css({
+      float: "right",
+      marginLeft: "auto",
+    });
+
     const replyButton = $("<button>")
       .addClass("btn btn-xs btn-link reply-btn")
-      .css({
-        float: "right",
-        marginLeft: "auto",
-      })
+      .css({ "font-size": "12px" })
       .html('<i class="fa fa-reply"></i> Reply')
       .on("click", () => handle_reply(commentSelector));
 
-    $replyContent.find(".text-muted").append(replyButton);
+    const moreButton = $("<div>")
+      .addClass("dropdown")
+      .css({ display: "inline-block" })
+      .append(
+        $("<button>")
+          .addClass("btn btn-xs btn-link dropdown-toggle")
+          .attr({
+            "data-toggle": "dropdown",
+            "aria-haspopup": "true",
+            "aria-expanded": "false",
+          })
+          .html('<svg class="icon icon-sm"><use href="#icon-dot-horizontal"></use></svg>')
+      );
+
+    const dropdownMenu = $("<div>")
+      .addClass("dropdown-menu small dropdown-menu-right")
+      .append(
+        $("<a>")
+          .addClass("dropdown-item")
+          .html("Copy Link")
+          .on("click", () => handle_reply_copy(commentSelector)),
+
+        $("<a>")
+          .addClass("dropdown-item")
+          .html("Delete")
+          .on("click", () => handle_reply_delete("#comment-" + reply.name))
+      );
+
+    const editButton = $("<button>")
+      .addClass("btn btn-xs btn-link small")
+      .html("Edit")
+      .on("click", () => handle_reply_edit(commentSelector));
+
+    moreButton.append(dropdownMenu);
+    actionButtons.append(editButton, replyButton, moreButton);
+    $replyContent.find(".text-muted").append(actionButtons);
   });
+
   $comment.after($replyContainer);
 }
 
@@ -158,5 +199,41 @@ function submit_reply(time_line_item, content) {
         addThreadedReply(time_line_item, this.cur_frm.doctype);
       }
     },
+  });
+}
+
+function handle_reply_copy(commentSelector) {
+  const $comment = $(commentSelector);
+  const commentId = $comment.data("name");
+  const currentUrl =
+    frappe.urllib.get_base_url() + frappe.utils.get_form_link(this.cur_frm.doctype, this.cur_frm.docname);
+  const commentUrl = `${currentUrl}#comment-${commentId}`;
+  frappe.utils.copy_to_clipboard(commentUrl);
+}
+
+function handle_reply_delete(commentSelector) {
+  const $comment = $(commentSelector);
+  const commentId = $comment.data("name");
+
+  frappe.confirm(__("Are you sure you want to delete this comment?"), () => {
+    frappe.call({
+      method: "frappe.client.delete",
+      args: {
+        doctype: "Comment",
+        name: commentId,
+      },
+      callback: (r) => {
+        if (r.exc) {
+          frappe.msgprint(__("There was an error deleting the comment"));
+        } else {
+          $comment.closest(".timeline-item").remove();
+          this.cur_frm?.footer.refresh();
+          frappe.show_alert({
+            message: __("Comment deleted"),
+            indicator: "green",
+          });
+        }
+      },
+    });
   });
 }
