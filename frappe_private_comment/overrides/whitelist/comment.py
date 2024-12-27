@@ -115,9 +115,8 @@ def get_all_replies(reference_doctype: str, reference_name: str):
     structured_comments = dict()
 
     for reply in replies:
-        if reply["custom_reply_to"] is None:
-            structured_comments.setdefault(reply["name"], [])
-        structured_comments.setdefault(reply["custom_reply_to"], [])
-        structured_comments[reply["custom_reply_to"]].append(reply)
+        if reply["custom_reply_to"]:
+            structured_comments.setdefault(reply["custom_reply_to"], [])
+            structured_comments[reply["custom_reply_to"]].append(reply)
 
     return structured_comments

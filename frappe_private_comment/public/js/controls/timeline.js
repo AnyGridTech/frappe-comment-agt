@@ -48,6 +48,8 @@ function add_visibility_icons(time_line_item, visibility) {
 
   time_line_item.querySelector(".timeline-message-box > span > span > span").innerHTML +=
     update_the_comment_visibility(visibility);
+
+  add_reply_button(time_line_item);
 }
 
 function update_comments_timeline() {

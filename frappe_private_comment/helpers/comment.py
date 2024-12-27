@@ -25,10 +25,15 @@ def add_comments_in_timeline(doc, docinfo):
     docinfo.like_logs = []
     docinfo.workflow_logs = []
 
+    # Get only parent comments
     comments = frappe.get_all(
         "Comment",
         fields="*",
-        filters={"reference_doctype": doc.doctype, "reference_name": doc.name},
+        filters={
+            "reference_doctype": doc.doctype,
+            "reference_name": doc.name,
+            "custom_reply_to": "",
+        },
     )
 
     filtered_comments = []

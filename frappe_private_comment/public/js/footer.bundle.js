@@ -1,5 +1,6 @@
 // NOTE: run `bench build` after making changes to this file
 // alternatively, run `bench watch` to automatically build on file changes
+// This is done this way in order to import and override the default Frappe FormTimeline class
 import FormTimeline from "frappe/public/js/frappe/form/footer/form_timeline.js";
 
 class CustomFormTimeline extends FormTimeline {
@@ -116,14 +117,6 @@ frappe.ui.form.Footer = class extends frappe.ui.form.Footer {
           const $item = $(this);
           const commentId = $item.data("name");
           const replies = res.message[commentId];
-          // NOTE: If the comment is a reply, remove from timeline as
-          // we are manually showing it as a reply
-          if (!res.message.hasOwnProperty(commentId)) {
-            $item.remove();
-            return;
-          }
-
-          add_reply_button($item);
           if (!replies || replies.length === 0) return;
           render_replies($item, replies);
         });
