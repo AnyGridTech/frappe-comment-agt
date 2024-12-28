@@ -1,5 +1,4 @@
 function add_reply_button(time_line_item) {
-  // if reply button already exists, return
   if ($(time_line_item).find(".custom-actions .reply-btn").length) {
     return;
   }
