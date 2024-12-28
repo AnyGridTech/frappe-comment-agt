@@ -57,7 +57,7 @@ function update_comments_timeline() {
 
   for (let index = 0; index < html_time_line_items.length; index++) {
     if (html_time_line_items[index].querySelector(".visibility-info")) {
-      return;
+      continue;
     }
     update_time_line(html_time_line_items[index]);
   }

@@ -36,7 +36,7 @@ def add_comments_in_timeline(doc, docinfo):
         },
     )
 
-    filtered_comments = []
+    filtered_comments = filter_comments_by_visibility(comments, frappe.session.user)
 
     if frappe.session.user != "Administrator":
         for comment in comments:
@@ -81,3 +81,32 @@ def add_comments_in_timeline(doc, docinfo):
                 docinfo.workflow_logs.append(c)
 
     return comments
+
+
+def filter_comments_by_visibility(comments, user):
+    filtered_comments = []
+
+    if user != "Administrator":
+        for comment in comments:
+            if comment.custom_visibility == "Visible to only you":
+                if comment.owner == user:
+                    filtered_comments.append(comment)
+
+            elif comment.custom_visibility == "Visible to mentioned":
+                member = frappe.db.get_all(
+                    "User Group Member",
+                    filters={
+                        "user": user,
+                        "parent": comment.name,
+                        "parenttype": "Comment",
+                    },
+                )
+
+                if comment.owner == user or (len(member) > 0):
+                    filtered_comments.append(comment)
+
+            else:
+                filtered_comments.append(comment)
+    else:
+        filtered_comments = comments
+    return filtered_comments

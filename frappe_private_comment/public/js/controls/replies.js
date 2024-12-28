@@ -46,7 +46,7 @@ function render_replies(commentSelector, replies) {
                                 } commented . </span>
                                 <span>&nbsp; ${frappe.datetime.comment_when(reply.creation)}</span>
                             </span>
-                            <span>${update_the_comment_visibility(true)}</span><hr />
+                            <hr />
                             <div class="read-mode">
                                 <p>${reply.content}</p>
                             </div>
@@ -165,13 +165,15 @@ function handle_reply(time_line_item) {
       </div>
     `);
 
+  replyEditBox.append(get_input_html(time_line_item));
   commentBox.append(replyEditBox);
 
   replyEditBox.find(".ql-editor").focus();
 
   replyEditBox.find(".submit-reply").on("click", () => {
     const replyContent = replyEditBox.find(".ql-editor").html();
-    submit_reply(time_line_item, replyContent);
+    const visibility = replyEditBox.find("#visibility").val();
+    submit_reply(time_line_item, replyContent, visibility);
   });
 
   replyEditBox.find(".cancel-reply").on("click", () => {
@@ -187,7 +189,7 @@ function handle_reply(time_line_item) {
   );
 }
 
-function submit_reply(time_line_item, content) {
+function submit_reply(time_line_item, content, visibility) {
   frappe.call({
     method: "frappe.desk.form.utils.add_comment",
     args: {
@@ -195,6 +197,7 @@ function submit_reply(time_line_item, content) {
       reference_name: this.cur_frm.docname,
       custom_reply_to: $(time_line_item).data("name") || null,
       content: content,
+      custom_visibility: visibility,
       comment_email: frappe.session.user,
       comment_by: frappe.session.user_fullname,
     },
@@ -254,16 +257,18 @@ function handle_reply_edit(parentComment, commentSelector) {
 
   $readMode.hide();
   $editMode.show();
+  if ($editMode.find(".comment-select-group").length === 0) {
+    $editMode.find(".edit-textarea").after(get_input_html($comment));
+  }
 
   $editMode.find(".save-edit").on("click", function () {
     const newContent = $editMode.find(".edit-textarea").val();
     frappe.call({
-      method: "frappe.client.set_value",
+      method: "frappe.desk.form.utils.update_comment",
       args: {
-        doctype: "Comment",
         name: commentId,
-        fieldname: "content",
-        value: newContent,
+        content: newContent,
+        custom_visibility: $editMode.find("select[data-label='visibility']").val(),
       },
       callback: function (r) {
         if (!r.exc) {

@@ -4,7 +4,7 @@ import frappe
 from frappe.core.doctype.file.utils import extract_images_from_html
 from frappe.desk.form.document_follow import follow_document
 
-from frappe_private_comment.helpers.comment import get_mention_user
+from frappe_private_comment.helpers.comment import filter_comments_by_visibility, get_mention_user
 
 if TYPE_CHECKING:
     from frappe.core.doctype.comment.comment import Comment
@@ -108,13 +108,14 @@ def get_all_replies(reference_doctype: str, reference_name: str):
             "reference_doctype": reference_doctype,
             "reference_name": reference_name,
         },
-        fields=["name", "content", "comment_by", "creation", "custom_reply_to"],
+        fields="*",
     )
+    filtered_replies = filter_comments_by_visibility(replies, frappe.session.user)
 
     # Create a dictionary to store the structured comments
     structured_comments = dict()
 
-    for reply in replies:
+    for reply in filtered_replies:
         if reply["custom_reply_to"]:
             structured_comments.setdefault(reply["custom_reply_to"], [])
             structured_comments[reply["custom_reply_to"]].append(reply)
