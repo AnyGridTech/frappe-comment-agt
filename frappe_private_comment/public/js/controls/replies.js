@@ -99,13 +99,18 @@ function render_replies(commentSelector, replies) {
         $("<a>")
           .addClass("dropdown-item")
           .html("Copy Link")
-          .on("click", () => handle_reply_copy(commentSelector)),
+          .on("click", () => handle_reply_copy("#comment-" + reply.name))
+      );
 
+    // if owner or administrator, add the delete button
+    if (frappe.user.has_role("System Manager") || reply.comment_email === frappe.session.user) {
+      dropdownMenu.append(
         $("<a>")
           .addClass("dropdown-item")
           .html("Delete")
           .on("click", () => handle_reply_delete("#comment-" + reply.name))
       );
+    }
 
     const editButton = $("<button>")
       .addClass("btn btn-xs btn-link small")

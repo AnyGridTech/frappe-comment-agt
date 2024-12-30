@@ -7,7 +7,7 @@ const time_line_interval_loop = setInterval(() => {
   if (html_time_line_item.length != 0) {
     update_comments_timeline();
   }
-}, 500);
+}, 100);
 
 function get_comment_visibility_icons(visibility) {
   if (visibility == "Visible to everyone") {
