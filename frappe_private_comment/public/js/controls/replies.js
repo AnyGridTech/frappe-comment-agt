@@ -39,9 +39,9 @@ function render_replies(commentSelector, replies) {
                     <div class="timeline-content">
                         <div class="timeline-message-box">
                             <span class="text-muted">
-                                ${frappe.avatar(reply.comment_by, "avatar-medium")}
+                                ${frappe.avatar(reply.comment_email, "avatar-medium")}
                                 <span class="timeline-user">${
-                                  reply.comment_by === frappe.session.user ? "You" : reply.comment_by
+                                  reply.comment_by === frappe.session.user_fullname ? "You" : reply.comment_by
                                 } commented . </span>
                                 <span>&nbsp; ${frappe.datetime.comment_when(reply.creation)}</span>
                             </span>
@@ -198,7 +198,7 @@ function submit_reply(time_line_item, content, visibility) {
       content: content,
       custom_visibility: visibility,
       comment_email: frappe.session.user,
-      comment_by: frappe.session.user,
+      comment_by: frappe.session.user_fullname,
     },
     callback: (r) => {
       if (r.message) {
