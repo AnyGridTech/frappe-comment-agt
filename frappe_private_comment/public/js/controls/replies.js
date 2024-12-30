@@ -38,13 +38,17 @@ function render_replies(commentSelector, replies) {
     }" style="position: relative; background-color: #F7F7F7; max-width: 700px">
                     <div class="timeline-content">
                         <div class="timeline-message-box">
-                            <span class="text-muted">
-                                ${frappe.avatar(reply.comment_email, "avatar-medium")}
-                                <span class="timeline-user">${
-                                  reply.comment_by === frappe.session.user_fullname ? "You" : reply.comment_by
-                                } commented . </span>
-                                <span>&nbsp; ${frappe.datetime.comment_when(reply.creation)}</span>
-                            </span>
+                            <div>
+                              <div>
+                                <span class="text-muted">
+                                    ${frappe.avatar(reply.comment_email, "avatar-medium")}
+                                    <span class="timeline-user">${
+                                      reply.comment_by === frappe.session.user_fullname ? "You" : reply.comment_by
+                                    } commented . </span>
+                                    <span>&nbsp; ${frappe.datetime.comment_when(reply.creation)}</span>
+                                </span>
+                              </div>
+                            </div>
                             <hr />
                             <div class="read-mode">
                                 <p>${reply.content}</p>

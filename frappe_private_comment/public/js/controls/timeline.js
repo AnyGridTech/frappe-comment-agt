@@ -46,8 +46,10 @@ function add_visibility_icons(time_line_item, visibility) {
     time_line_item.querySelector(".visibility-container").remove();
   }
 
-  time_line_item.querySelector(".timeline-message-box > span > span > span").innerHTML +=
-    update_the_comment_visibility(visibility);
+  const avatarElement = time_line_item.querySelector(".timeline-message-box .avatar.avatar-medium");
+  if (avatarElement && avatarElement.parentElement) {
+    avatarElement.parentElement.insertAdjacentHTML("afterend", update_the_comment_visibility(visibility));
+  }
 
   add_reply_button(time_line_item);
 }
