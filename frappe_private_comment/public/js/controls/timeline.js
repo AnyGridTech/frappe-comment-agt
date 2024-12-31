@@ -135,6 +135,10 @@ function handle_save(time_line_item, button) {
 }
 
 function handle_edit(time_line_item, button) {
+  const replyContainer = time_line_item.querySelector(".reply-container");
+  if (replyContainer) {
+    replyContainer.remove();
+  }
   time_line_item.querySelector(".timeline-message-box").append(get_input_html(time_line_item));
   time_line_item.querySelector("#visibility").value =
     time_line_item.querySelector(".visibility-info").dataset.visibility;

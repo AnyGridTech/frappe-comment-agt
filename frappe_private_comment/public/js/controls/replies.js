@@ -73,12 +73,6 @@ function render_replies(commentSelector, replies) {
       marginLeft: "auto",
     });
 
-    const replyButton = $("<button>")
-      .addClass("btn btn-xs btn-link reply-btn")
-      .css({ "font-size": "12px" })
-      .html('<i class="fa fa-reply"></i> Reply')
-      .on("click", () => handle_reply(commentSelector));
-
     const moreButton = $("<div>")
       .addClass("dropdown")
       .css({ display: "inline-block" })
@@ -103,7 +97,10 @@ function render_replies(commentSelector, replies) {
       );
 
     // if owner or administrator, add the delete button
-    if (frappe.session.user === "Administrator" || reply.comment_email === frappe.session.user) {
+    if (
+      frappe.model.can_delete("Comment") &&
+      (frappe.session.user === "Administrator" || reply.comment_email === frappe.session.user)
+    ) {
       dropdownMenu.append(
         $("<a>")
           .addClass("dropdown-item")
@@ -118,7 +115,7 @@ function render_replies(commentSelector, replies) {
       .on("click", () => handle_reply_edit(commentSelector, "#comment-" + reply.name));
 
     moreButton.append(dropdownMenu);
-    actionButtons.append(editButton, replyButton, moreButton);
+    actionButtons.append(editButton, moreButton);
     $replyContent.find(".text-muted").append(actionButtons);
   });
 
@@ -152,46 +149,88 @@ function addThreadedReply(commentSelector, doctype) {
 }
 
 function handle_reply(time_line_item) {
-  const commentBox = $(time_line_item).find(".comment-edit-box");
-
-  if (!commentBox.length) {
-    console.error("Comment box not found");
-    return;
+  // if on Edit Mode, click on `Dismiss` button
+  const dismissButton = $(time_line_item).find(".custom-actions.save-open > button:nth-child(2)");
+  if (dismissButton.length) {
+    dismissButton.click();
   }
+  const $timeLineItem = $(time_line_item);
+  const replyingToName = $timeLineItem.find(".avatar.avatar-medium").attr("title");
+  const replyContainer = $(`
+    <div class="reply-container" style="margin-top: 14px; maximum-width: fit-content; margin-left: 40px; margin-right: 20px;">
+      <div class="small text-muted mb-2">Replying to ${replyingToName}</div>
+    </div>
+`).appendTo($timeLineItem.find(".timeline-content"));
 
-  commentBox.css("display", "block");
-  commentBox.empty();
+  replyContainer.css("display", "block");
 
-  const replyEditBox = $("<div>").addClass("reply-edit-box").html(`
-      <div class="ql-container ql-snow">
-        <div class="ql-editor" contenteditable="true" style="max-height: 40px;">
+  const replyControl = frappe.ui.form.make_control({
+    parent: replyContainer,
+    df: {
+      fieldtype: "Comment",
+      fieldname: "comment",
+      placeholder: __("Add a reply..."),
+    },
+    render_input: true,
+    enable_mentions: true,
+    only_input: true,
+    no_wrapper: true,
+  });
+
+  replyControl.refresh();
+
+  const visibilitySelect = $(`
+    <div class="checkbox comment-visibility-input form-inline form-group mt-3 ml-1 mb-2" >
+      <div class="comment-select-group">
+        <span class="text-muted small">Comment Visibility:</span>
+        <label for="status" class="visibility-label control-label text-muted small">
+          ${get_comment_visibility_icons("Visible to everyone")}
+        </label>
+        <div class="select-input form-control">
+          <select name="visibility" id="visibility" data-label="visibility" data-fieldtype="Select">
+            <option value="Visible to everyone" selected="selected">Visible to everyone</option>
+            <option value="Visible to mentioned">Visible to mentioned</option>
+            <option value="Visible to only you">Visible to only you</option>
+          </select>
+          <div class="select-icon">
+            <svg class="icon icon-sm" style="">
+              <use class="" href="#icon-select"></use>
+            </svg>
+          </div>
         </div>
       </div>
-      <div class="reply-actions" style="background-color: white; padding: 4px;">
-        <button class="btn btn-sm btn-primary submit-reply">Submit</button>
-        <button class="btn btn-sm btn-default cancel-reply">Cancel</button>
-      </div>
-    `);
+    </div>
+  `).appendTo(replyContainer);
 
-  replyEditBox.append(get_input_html(time_line_item));
-  commentBox.append(replyEditBox);
-
-  replyEditBox.find(".ql-editor").focus();
-
-  replyEditBox.find(".submit-reply").on("click", () => {
-    const replyContent = replyEditBox.find(".ql-editor").html();
-    const visibility = replyEditBox.find("#visibility").val();
-    submit_reply(time_line_item, replyContent, visibility);
+  visibilitySelect.find("select").on("change", function () {
+    const selectedValue = $(this).val();
+    const newIcon = get_comment_visibility_icons(selectedValue);
+    visibilitySelect.find(".visibility-label").html(newIcon);
   });
 
-  replyEditBox.find(".cancel-reply").on("click", () => {
-    commentBox.empty().css("display", "none");
+  const actionButtons = $(`
+    <div class="reply-actions" style="margin-top: 3px; margin-bottom: 12px;">
+      <button class="btn btn-sm btn-primary submit-reply">${__("Submit")}</button>
+      <button class="btn btn-sm btn-default cancel-reply">${__("Cancel")}</button>
+    </div>
+  `).appendTo(replyContainer);
+
+  actionButtons.find(".submit-reply").on("click", () => {
+    const replyContent = replyControl.get_value();
+    const visibility = visibilitySelect.find("select").val();
+    if (strip_html(replyContent).trim() != "" || replyContent.includes("img")) {
+      submit_reply($timeLineItem, replyContent, visibility);
+    }
   });
 
-  // Scroll to the comment box
+  actionButtons.find(".cancel-reply").on("click", () => {
+    replyContainer.remove();
+  });
+
+  // Scroll to the reply container
   $("html, body").animate(
     {
-      scrollTop: commentBox.offset().top - $(window).height() / 2,
+      scrollTop: replyContainer.offset().top - $(window).height() / 2,
     },
     1000
   );
@@ -211,7 +250,7 @@ function submit_reply(time_line_item, content, visibility) {
     },
     callback: (r) => {
       if (r.message) {
-        $(time_line_item).find(".comment-edit-box").empty().css("display", "none");
+        $(time_line_item).find(".reply-container").remove();
         frappe.utils.play_sound("click");
         update_comments_timeline();
         addThreadedReply(time_line_item, this.cur_frm.doctype);
