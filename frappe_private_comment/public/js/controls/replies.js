@@ -103,7 +103,7 @@ function render_replies(commentSelector, replies) {
       );
 
     // if owner or administrator, add the delete button
-    if (frappe.user.has_role("System Manager") || reply.comment_email === frappe.session.user) {
+    if (frappe.session.user === "Administrator" || reply.comment_email === frappe.session.user) {
       dropdownMenu.append(
         $("<a>")
           .addClass("dropdown-item")
