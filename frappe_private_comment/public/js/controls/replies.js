@@ -53,13 +53,7 @@ function render_replies(commentSelector, replies) {
                             <div class="read-mode">
                                 <p>${reply.content}</p>
                             </div>
-                            <div class="edit-mode" style="display: none;">
-                            <textarea class="form-control edit-textarea" rows="3">${reply.content}</textarea>
-                            <div class="mt-2">
-                              <button class="btn btn-sm btn-primary save-edit">Save</button>
-                              <button class="btn btn-sm btn-default cancel-edit">Cancel</button>
-                            </div>
-                          </div>
+                            <div class="edit-mode" style="display: none;"></div>
                         </div>
                     </div>
                 </div>
@@ -214,7 +208,7 @@ function handle_reply(time_line_item) {
 
   const actionButtons = $(`
     <div class="reply-actions" style="margin-top: 3px; margin-bottom: 12px;">
-      <button class="btn btn-sm btn-primary submit-reply">${__("Submit")}</button>
+      <button class="btn btn-sm btn-primary submit-reply">${__("Comment")}</button>
       <button class="btn btn-sm btn-default cancel-reply">${__("Cancel")}</button>
     </div>
   `).appendTo(replyContainer);
@@ -325,7 +319,6 @@ function handle_reply_edit(parentComment, commentSelector) {
   editControl.set_value($readMode.find(".ql-editor.read-mode").html());
   editControl.refresh();
 
-  // FIXME: Duplicate code from `handle_reply`
   const visibilitySelect = $(`
     <div class="checkbox comment-visibility-input form-inline form-group mt-3 ml-1 mb-2">
       <div class="comment-select-group">
@@ -361,14 +354,15 @@ function handle_reply_edit(parentComment, commentSelector) {
     visibilitySelect.find(".visibility-label").html(newIcon);
   });
 
-  const actionButtons = $(`
-    <div class="reply-actions mt-2">
-      <button class="btn btn-sm btn-primary save-edit">${__("Save")}</button>
-      <button class="btn btn-sm btn-default cancel-edit">${__("Cancel")}</button>
+  const $actionButtons = $(`
+    <div class="reply-actions" style="display: inline-block;">
+      <button class="btn btn-sm save-edit">${__("Save")}</button>
+      <button class="btn btn-sm cancel-edit">${__("Dismiss")}</button>
     </div>
-  `).appendTo($editMode);
+  `);
+  $actionButtons.prependTo($comment.find(".comment-actions"));
 
-  actionButtons.find(".save-edit").on("click", function () {
+  $actionButtons.find(".save-edit").on("click", function () {
     const newContent = editControl.get_value();
     frappe.call({
       method: "frappe.desk.form.utils.update_comment",
@@ -395,8 +389,9 @@ function handle_reply_edit(parentComment, commentSelector) {
     });
   });
 
-  actionButtons.find(".cancel-edit").on("click", function () {
+  $actionButtons.find(".cancel-edit").on("click", function () {
     $editMode.hide();
     $readMode.show();
+    $actionButtons.remove();
   });
 }
