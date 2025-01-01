@@ -96,6 +96,7 @@ def get_comment_replies(reference_doctype: str, comment_id: str):
             "custom_reply_to": comment_id,
         },
         fields="*",
+        order_by="creation DESC",
     )
     return filter_comments_by_visibility(replies, frappe.session.user)
 
@@ -110,6 +111,7 @@ def get_all_replies(reference_doctype: str, reference_name: str):
             "reference_name": reference_name,
         },
         fields="*",
+        order_by="creation DESC",
     )
     filtered_replies = filter_comments_by_visibility(replies, frappe.session.user)
 

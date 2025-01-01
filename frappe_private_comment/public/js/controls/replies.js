@@ -156,6 +156,10 @@ function handle_reply(time_line_item) {
   }
   const $timeLineItem = $(time_line_item);
   const replyingToName = $timeLineItem.find(".avatar.avatar-medium").attr("title");
+  if ($timeLineItem.find(".reply-container").length) {
+    return;
+  }
+
   const replyContainer = $(`
     <div class="reply-container" style="margin-top: 14px; maximum-width: fit-content; margin-left: 40px; margin-right: 20px;">
       <div class="small text-muted mb-2">Replying to ${replyingToName}</div>
@@ -303,25 +307,81 @@ function handle_reply_edit(parentComment, commentSelector) {
   const doctype = this.cur_frm.doctype;
 
   $readMode.hide();
-  $editMode.show();
-  if ($editMode.find(".comment-select-group").length === 0) {
-    $editMode.find(".edit-textarea").after(get_input_html($comment));
-  }
+  $editMode.show().empty();
 
-  $editMode.find(".save-edit").on("click", function () {
-    const newContent = $editMode.find(".edit-textarea").val();
+  const editControl = frappe.ui.form.make_control({
+    parent: $editMode,
+    df: {
+      fieldtype: "Comment",
+      fieldname: "edit_comment",
+      placeholder: __("Edit your reply..."),
+    },
+    render_input: true,
+    enable_mentions: true,
+    only_input: true,
+    no_wrapper: true,
+  });
+
+  editControl.set_value($readMode.find(".ql-editor.read-mode").html());
+  editControl.refresh();
+
+  // FIXME: Duplicate code from `handle_reply`
+  const visibilitySelect = $(`
+    <div class="checkbox comment-visibility-input form-inline form-group mt-3 ml-1 mb-2">
+      <div class="comment-select-group">
+        <span class="text-muted small">Comment Visibility:</span>
+        <label for="status" class="visibility-label control-label text-muted small">
+          ${get_comment_visibility_icons($comment.data("visibility") || "Visible to everyone")}
+        </label>
+        <div class="select-input form-control">
+          <select name="visibility" id="visibility" data-label="visibility" data-fieldtype="Select">
+            <option value="Visible to everyone" ${
+              $comment.data("visibility") === "Visible to everyone" ? "selected" : ""
+            }>Visible to everyone</option>
+            <option value="Visible to mentioned" ${
+              $comment.data("visibility") === "Visible to mentioned" ? "selected" : ""
+            }>Visible to mentioned</option>
+            <option value="Visible to only you" ${
+              $comment.data("visibility") === "Visible to only you" ? "selected" : ""
+            }>Visible to only you</option>
+          </select>
+          <div class="select-icon">
+            <svg class="icon icon-sm" style="">
+              <use class="" href="#icon-select"></use>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).appendTo($editMode);
+
+  visibilitySelect.find("select").on("change", function () {
+    const selectedValue = $(this).val();
+    const newIcon = get_comment_visibility_icons(selectedValue);
+    visibilitySelect.find(".visibility-label").html(newIcon);
+  });
+
+  const actionButtons = $(`
+    <div class="reply-actions mt-2">
+      <button class="btn btn-sm btn-primary save-edit">${__("Save")}</button>
+      <button class="btn btn-sm btn-default cancel-edit">${__("Cancel")}</button>
+    </div>
+  `).appendTo($editMode);
+
+  actionButtons.find(".save-edit").on("click", function () {
+    const newContent = editControl.get_value();
     frappe.call({
       method: "frappe.desk.form.utils.update_comment",
       args: {
         name: commentId,
         content: newContent,
-        custom_visibility: $editMode.find("select[data-label='visibility']").val(),
+        custom_visibility: visibilitySelect.find("select").val(),
       },
       callback: function (r) {
         if (!r.exc) {
           $comment.find(".comment-content").html(newContent);
-          $comment.find(".edit-mode").hide();
-          $comment.find(".read-mode").show();
+          $editMode.hide();
+          $readMode.show();
 
           addThreadedReply(parentComment, doctype);
           frappe.show_alert({
@@ -335,7 +395,7 @@ function handle_reply_edit(parentComment, commentSelector) {
     });
   });
 
-  $editMode.find(".cancel-edit").on("click", function () {
+  actionButtons.find(".cancel-edit").on("click", function () {
     $editMode.hide();
     $readMode.show();
   });
