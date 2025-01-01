@@ -22,7 +22,7 @@ function render_replies(commentSelector, replies) {
 
   // Add vertical line
   $replyContainer.append(
-    '<div class="vertical-line" style="position: absolute; left: -30px; top: 0; bottom: 0; width: 1px; background-color: #d1d8dd;"></div>'
+    '<div class="vertical-line" style="position: absolute; left: -30px; top: 0; bottom: 0; width: 1px; background-color: #e0e5e8;"></div>'
   );
 
   replies.forEach((reply) => {
@@ -104,7 +104,7 @@ function render_replies(commentSelector, replies) {
     }
 
     const editButton = $("<button>")
-      .addClass("btn btn-xs btn-link small")
+      .addClass("btn btn-xs small")
       .html("Edit")
       .on("click", () => handle_reply_edit(commentSelector, "#comment-" + reply.name));
 
@@ -170,6 +170,7 @@ function handle_reply(time_line_item) {
       placeholder: __("Add a reply..."),
     },
     render_input: true,
+    input_class: "edit-reply-input",
     enable_mentions: true,
     only_input: true,
     no_wrapper: true,
@@ -317,6 +318,8 @@ function handle_reply_edit(parentComment, commentSelector) {
   });
 
   editControl.set_value($readMode.find(".ql-editor.read-mode").html());
+  // make the background color white
+  $editMode.find(".ql-editor").css("background-color", "white").focus();
   editControl.refresh();
 
   const visibilitySelect = $(`
@@ -326,8 +329,8 @@ function handle_reply_edit(parentComment, commentSelector) {
         <label for="status" class="visibility-label control-label text-muted small">
           ${get_comment_visibility_icons($comment.data("visibility") || "Visible to everyone")}
         </label>
-        <div class="select-input form-control">
-          <select name="visibility" id="visibility" data-label="visibility" data-fieldtype="Select">
+        <div class="select-input form-control" style="background-color: white;" >
+          <select name="visibility" id="visibility" data-label="visibility" data-fieldtype="Select" >
             <option value="Visible to everyone" ${
               $comment.data("visibility") === "Visible to everyone" ? "selected" : ""
             }>Visible to everyone</option>
@@ -356,11 +359,13 @@ function handle_reply_edit(parentComment, commentSelector) {
 
   const $actionButtons = $(`
     <div class="reply-actions" style="display: inline-block;">
-      <button class="btn btn-sm save-edit">${__("Save")}</button>
+      <button class="btn btn-sm underline save-edit">${__("Save")}</button>
       <button class="btn btn-sm cancel-edit">${__("Dismiss")}</button>
     </div>
   `);
-  $actionButtons.prependTo($comment.find(".comment-actions"));
+  if ($comment.find(".reply-actions").length === 0) {
+    $actionButtons.prependTo($comment.find(".comment-actions"));
+  }
 
   $actionButtons.find(".save-edit").on("click", function () {
     const newContent = editControl.get_value();
