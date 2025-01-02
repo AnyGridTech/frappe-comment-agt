@@ -7,7 +7,7 @@ const time_line_interval_loop = setInterval(() => {
   if (html_time_line_item.length != 0) {
     update_comments_timeline();
   }
-}, 100);
+}, 300);
 
 function get_comment_visibility_icons(visibility) {
   if (visibility == "Visible to everyone") {
@@ -51,15 +51,19 @@ function add_visibility_icons(time_line_item, visibility) {
     avatarElement.parentElement.insertAdjacentHTML("afterend", update_the_comment_visibility(visibility));
   }
 
+  // Add the reply button and refresh the threads
   add_reply_button(time_line_item);
+  this.cur_frm.timeline.refresh_callback();
 }
 
 function update_comments_timeline() {
+  // Select all the timeline comments and replies
   let html_time_line_items = document.querySelectorAll(".new-timeline > .timeline-items .timeline-item");
 
   for (let index = 0; index < html_time_line_items.length; index++) {
+    // if the comment visibility and replies are already added, skip
     if (html_time_line_items[index].querySelector(".visibility-info")) {
-      continue;
+      return;
     }
     update_time_line(html_time_line_items[index]);
   }
@@ -96,6 +100,9 @@ function update_time_line(time_line_item) {
 
   let button = time_line_item.querySelector(".custom-actions button");
 
+  if (!button) {
+    return;
+  }
   button.dataset.name = time_line_item.dataset.name;
 
   // Remove the event listener

@@ -64,8 +64,6 @@ def add_comment_override(
 
                 # Remove the current user from notification recipients
                 mention_users.discard(frappe.session.user)
-
-                frappe.log_error("mention_users", list(mention_users))
                 enqueue_create_notification(list(mention_users), notification_doc)
     except Exception as e:
         frappe.log_error(

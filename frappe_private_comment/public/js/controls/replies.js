@@ -47,6 +47,9 @@ function render_replies(commentSelector, replies) {
                                     } commented . </span>
                                     <span>&nbsp; ${frappe.datetime.comment_when(reply.creation)}</span>
                                 </span>
+                              ${update_the_comment_visibility(
+                                reply.comment_email === frappe.session.user ? reply.custom_visibility : null
+                              )}
                               </div>
                             </div>
                             <hr />
@@ -109,7 +112,10 @@ function render_replies(commentSelector, replies) {
       .on("click", () => handle_reply_edit(commentSelector, "#comment-" + reply.name));
 
     moreButton.append(dropdownMenu);
-    actionButtons.append(editButton, moreButton);
+    if (reply.comment_email === frappe.session.user) {
+      actionButtons.append(editButton);
+    }
+    actionButtons.append(moreButton);
     $replyContent.find(".text-muted").append(actionButtons);
   });
 
