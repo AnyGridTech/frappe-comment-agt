@@ -50,18 +50,26 @@ function add_visibility_icons(time_line_item, visibility) {
   if (avatarElement && avatarElement.parentElement) {
     avatarElement.parentElement.insertAdjacentHTML("afterend", update_the_comment_visibility(visibility));
   }
-
-  // Add the reply button and refresh the threads
-  add_reply_button(time_line_item);
-  this.cur_frm.timeline.refresh_callback();
 }
 
 function update_comments_timeline() {
   // Select all the timeline comments and replies
   let html_time_line_items = document.querySelectorAll(".new-timeline > .timeline-items .timeline-item");
 
+  // Add the reply button to the comments
   for (let index = 0; index < html_time_line_items.length; index++) {
-    // if the comment visibility and replies are already added, skip
+    // if the reply button is already added, skip
+    if (html_time_line_items[index].querySelector(".reply-btn")) {
+      break;
+    }
+    if (html_time_line_items[index].dataset.doctype == "Comment") {
+      add_reply_button(html_time_line_items[index]);
+    }
+  }
+
+  // Add the visibility icons to the comments
+  for (let index = 0; index < html_time_line_items.length; index++) {
+    // if the comment visibility are already added, skip
     if (html_time_line_items[index].querySelector(".visibility-info")) {
       return;
     }
@@ -95,6 +103,8 @@ function update_time_line(time_line_item) {
     },
     callback: (res) => {
       add_visibility_icons(time_line_item, res?.message?.custom_visibility);
+      // refresh the timeline thread
+      this.cur_frm.timeline.refresh_callback();
     },
   });
 
