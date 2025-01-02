@@ -2,9 +2,14 @@ from typing import TYPE_CHECKING
 
 import frappe
 from frappe.core.doctype.file.utils import extract_images_from_html
+from frappe.desk.doctype.notification_log.notification_log import enqueue_create_notification
 from frappe.desk.form.document_follow import follow_document
 
-from frappe_private_comment.helpers.comment import filter_comments_by_visibility, get_mention_user
+from frappe_private_comment.helpers.comment import (
+    filter_comments_by_visibility,
+    get_mention_user,
+    get_thread_participants,
+)
 
 if TYPE_CHECKING:
     from frappe.core.doctype.comment.comment import Comment
@@ -42,6 +47,31 @@ def add_comment_override(
 
     if frappe.get_cached_value("User", frappe.session.user, "follow_commented_documents"):
         follow_document(comment.reference_doctype, comment.reference_name, frappe.session.user)
+
+    try:
+        # Notify thread participants
+        if custom_reply_to:
+            mention_users = get_thread_participants(custom_reply_to)
+            if mention_users:
+                notification_doc = {
+                    "type": "Mention",
+                    "document_type": reference_doctype,
+                    "document_name": reference_name,
+                    "subject": "New thread activity",
+                    "from_user": frappe.session.user,
+                    "email_content": content,
+                }
+
+                # Remove the current user from notification recipients
+                mention_users.discard(frappe.session.user)
+
+                frappe.log_error("mention_users", list(mention_users))
+                enqueue_create_notification(list(mention_users), notification_doc)
+    except Exception as e:
+        frappe.log_error(
+            "Error sending Comment Thread notification",
+            frappe.get_traceback() + f"\n\nNotification Error: {e}",
+        )
 
     return comment
 

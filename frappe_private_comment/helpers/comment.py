@@ -86,3 +86,32 @@ def filter_comments_by_visibility(comments, user):
     else:
         filtered_comments = comments
     return filtered_comments
+
+
+def get_thread_participants(comment_id: str) -> set:
+    """
+    Get the participants in a comment thread
+    Returns a union of:
+    - The original commenter
+    - The mentioned users
+    - The commenters in the thread
+    """
+    # Get all comments in the thread
+    original_comment = frappe.get_doc("Comment", comment_id)
+    thread_comments = frappe.get_all(
+        "Comment",
+        filters={
+            "custom_reply_to": comment_id,
+        },
+        fields=["comment_email", "custom_mentions.user"],
+    )
+
+    mention_users = set()
+    mention_users.add(original_comment.comment_email)
+    for comment in thread_comments:
+        mention_users.add(comment["comment_email"])
+        mention_users.add(comment["user"])
+    mention_users.update(mention.user for mention in original_comment.custom_mentions)
+    mention_users.discard(None)
+
+    return mention_users
