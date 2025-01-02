@@ -35,7 +35,7 @@ function render_replies(commentSelector, replies) {
                 </div>
                 <div class="timeline-item frappe-card" data-doctype="Comment" id="comment-${reply.name}" data-name="${
       reply.name
-    }" style="position: relative; background-color: #F7F7F7; max-width: 700px">
+    }" style="position: relative;  max-width: 700px">
                     <div class="timeline-content">
                         <div class="timeline-message-box">
                             <div>
@@ -226,13 +226,14 @@ function handle_reply(time_line_item) {
     replyContainer.remove();
   });
 
-  // Scroll to the reply container
+  // Scroll to the reply container and focus on the input
   $("html, body").animate(
     {
       scrollTop: replyContainer.offset().top - $(window).height() / 2,
     },
     1000
   );
+  replyContainer.find(".ql-editor.ql-blank").focus();
 }
 
 function submit_reply(time_line_item, content, visibility) {
@@ -319,7 +320,7 @@ function handle_reply_edit(parentComment, commentSelector) {
 
   editControl.set_value($readMode.find(".ql-editor.read-mode").html());
   // make the background color white
-  $editMode.find(".ql-editor").css("background-color", "white").focus();
+  $editMode.find(".ql-editor").focus();
   editControl.refresh();
 
   const visibilitySelect = $(`
@@ -329,7 +330,7 @@ function handle_reply_edit(parentComment, commentSelector) {
         <label for="status" class="visibility-label control-label text-muted small">
           ${get_comment_visibility_icons($comment.data("visibility") || "Visible to everyone")}
         </label>
-        <div class="select-input form-control" style="background-color: white;" >
+        <div class="select-input form-control" >
           <select name="visibility" id="visibility" data-label="visibility" data-fieldtype="Select" >
             <option value="Visible to everyone" ${
               $comment.data("visibility") === "Visible to everyone" ? "selected" : ""
