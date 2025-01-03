@@ -4,30 +4,17 @@
 import FormTimeline from "frappe/public/js/frappe/form/footer/form_timeline.js";
 
 class CustomFormTimeline extends FormTimeline {
-  constructor(opts, refresh_callback) {
-    super(opts);
-    this.refresh_callback = refresh_callback;
-  }
-
-  update_comment(name, content) {
-    return frappe.xcall("frappe.desk.form.utils.update_comment", { name, content }).then(() => {
-      frappe.utils.play_sound("click");
-      this.refresh_callback();
+  get_comment_timeline_contents() {
+    let comment_timeline_contents = [];
+    (this.doc_info.comments || []).forEach((comment) => {
+      // NOTE: The comment was being added on the timeline even if it was a reply on refresh
+      // if the comment is a reply, don't add it to the timeline
+      if (comment.custom_reply_to !== null) {
+        return;
+      }
+      comment_timeline_contents.push(this.get_comment_timeline_item(comment));
     });
-  }
-
-  delete_comment(comment_name) {
-    frappe.confirm(__("Delete comment?"), () => {
-      return frappe
-        .xcall("frappe.client.delete", {
-          doctype: "Comment",
-          name: comment_name,
-        })
-        .then(() => {
-          frappe.utils.play_sound("delete");
-          this.refresh_callback();
-        });
-    });
+    return comment_timeline_contents;
   }
 }
 
@@ -41,13 +28,10 @@ frappe.ui.form.Footer = class extends frappe.ui.form.Footer {
   }
 
   make_timeline() {
-    this.frm.timeline = new CustomFormTimeline(
-      {
-        parent: this.wrapper.find(".timeline"),
-        frm: this.frm,
-      },
-      this.setup_replies
-    );
+    this.frm.timeline = new CustomFormTimeline({
+      parent: this.wrapper.find(".timeline"),
+      frm: this.frm,
+    });
   }
 
   make_comment_box() {
