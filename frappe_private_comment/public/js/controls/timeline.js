@@ -104,7 +104,7 @@ function update_time_line(time_line_item) {
     callback: (res) => {
       add_visibility_icons(time_line_item, res?.message?.custom_visibility);
       // refresh the timeline thread
-      this.cur_frm.timeline.refresh_callback();
+      this.cur_frm.footer.setup_replies();
     },
   });
 
