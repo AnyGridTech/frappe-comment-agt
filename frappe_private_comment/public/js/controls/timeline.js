@@ -178,7 +178,7 @@ function get_input_html(time_line_item) {
                         Visible to only you</option>
                 </select>
                 <div class="select-icon ">
-                    <svg class="icon  icon-sm" style="">
+                    <svg class="icon  icon-sm">
                         <use class="" href="#icon-select"></use>
                     </svg>
                 </div>

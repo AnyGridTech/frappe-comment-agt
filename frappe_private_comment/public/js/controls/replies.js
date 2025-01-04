@@ -4,7 +4,6 @@ function add_reply_button(time_line_item) {
   }
   const replyButton = $("<button>")
     .addClass("btn btn-xs btn-link reply-btn")
-    .css({ "font-size": "12px" })
     .html('<i class="fa fa-reply"></i> Reply')
     .on("click", () => handle_reply(time_line_item));
 
@@ -16,26 +15,22 @@ function render_replies(commentSelector, replies) {
   const $prevContainer = $comment.next(".threaded-reply-container");
   $prevContainer && $prevContainer.remove();
 
-  const $replyContainer = $(
-    '<div class="threaded-reply-container " style="margin-left: 90px; position: relative;"></div>'
-  );
+  const $replyContainer = $('<div class="threaded-reply-container"></div>');
 
   // Add vertical line
-  $replyContainer.append(
-    '<div class="vertical-line" style="position: absolute; left: -30px; top: 0; bottom: 0; width: 1px; background-color: #e0e5e8;"></div>'
-  );
+  $replyContainer.append('<div class="vertical-line"></div>');
 
   replies.forEach((reply) => {
     const $replyContent = $(`
             <div style="position: relative;">
-                <div class="timeline-badge" style="position: absolute; left: -43px; top: 10px; background-color: #F3F3F3; padding: 5px; border-radius: 999px;">
+                <div class="timeline-badge">
                     <svg class="icon icon-md">
                         <use href="#icon-small-message"></use>
                     </svg>
                 </div>
                 <div class="timeline-item frappe-card" data-doctype="Comment" id="comment-${reply.name}" data-name="${
       reply.name
-    }" style="position: relative;  max-width: 700px">
+    }">
                     <div class="timeline-content">
                         <div class="timeline-message-box">
                             <div>
@@ -56,7 +51,7 @@ function render_replies(commentSelector, replies) {
                             <div class="read-mode">
                                 <p>${reply.content}</p>
                             </div>
-                            <div class="edit-mode" style="display: none;"></div>
+                            <div class="edit-mode"></div>
                         </div>
                     </div>
                 </div>
@@ -65,14 +60,10 @@ function render_replies(commentSelector, replies) {
 
     $replyContainer.append($replyContent);
 
-    const actionButtons = $("<div>").addClass("comment-actions").css({
-      float: "right",
-      marginLeft: "auto",
-    });
+    const actionButtons = $("<div>").addClass("comment-actions");
 
     const moreButton = $("<div>")
       .addClass("dropdown")
-      .css({ display: "inline-block" })
       .append(
         $("<button>")
           .addClass("btn btn-xs btn-link dropdown-toggle")
@@ -161,12 +152,10 @@ function handle_reply(time_line_item) {
   }
 
   const replyContainer = $(`
-    <div class="reply-container" style="margin-top: 14px; maximum-width: fit-content; margin-left: 40px; margin-right: 20px;">
+    <div class="reply-container">
       <div class="small text-muted mb-2">Replying to ${replyingToName}</div>
     </div>
 `).appendTo($timeLineItem.find(".timeline-content"));
-
-  replyContainer.css("display", "block");
 
   const replyControl = frappe.ui.form.make_control({
     parent: replyContainer,
@@ -198,7 +187,7 @@ function handle_reply(time_line_item) {
             <option value="Visible to only you">Visible to only you</option>
           </select>
           <div class="select-icon">
-            <svg class="icon icon-sm" style="">
+            <svg class="icon icon-sm">
               <use class="" href="#icon-select"></use>
             </svg>
           </div>
@@ -214,7 +203,7 @@ function handle_reply(time_line_item) {
   });
 
   const actionButtons = $(`
-    <div class="reply-actions" style="margin-top: 3px; margin-bottom: 12px;">
+    <div class="reply-actions">
       <button class="btn btn-sm btn-primary submit-reply">${__("Comment")}</button>
       <button class="btn btn-sm btn-default cancel-reply">${__("Cancel")}</button>
     </div>
@@ -349,7 +338,7 @@ function handle_reply_edit(parentComment, commentSelector) {
             }>Visible to only you</option>
           </select>
           <div class="select-icon">
-            <svg class="icon icon-sm" style="">
+            <svg class="icon icon-sm">
               <use class="" href="#icon-select"></use>
             </svg>
           </div>
@@ -365,7 +354,7 @@ function handle_reply_edit(parentComment, commentSelector) {
   });
 
   const $actionButtons = $(`
-    <div class="reply-actions" style="display: inline-block;">
+    <div class="reply-actions">
       <button class="btn btn-sm underline save-edit">${__("Save")}</button>
       <button class="btn btn-sm cancel-edit">${__("Dismiss")}</button>
     </div>
