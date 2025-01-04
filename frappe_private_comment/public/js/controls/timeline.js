@@ -46,15 +46,22 @@ function add_visibility_icons(time_line_item, visibility) {
     time_line_item.querySelector(".visibility-container").remove();
   }
 
-  const avatarElement = time_line_item.querySelector(".timeline-message-box .avatar.avatar-medium");
-  if (avatarElement && avatarElement.parentElement) {
-    avatarElement.parentElement.insertAdjacentHTML("afterend", update_the_comment_visibility(visibility));
-  }
+  time_line_item.querySelector(".timeline-message-box > span > span > span").innerHTML +=
+    update_the_comment_visibility(visibility);
 }
 
 function update_comments_timeline() {
   // Select all the timeline comments and replies
   let html_time_line_items = document.querySelectorAll(".new-timeline > .timeline-items .timeline-item");
+
+  // Add the visibility icons to the comments
+  for (let index = 0; index < html_time_line_items.length; index++) {
+    // if the comment visibility are already added, skip
+    if (html_time_line_items[index].querySelector(".visibility-info")) {
+      break;
+    }
+    update_time_line(html_time_line_items[index]);
+  }
 
   // Add the reply button to the comments
   for (let index = 0; index < html_time_line_items.length; index++) {
@@ -65,15 +72,6 @@ function update_comments_timeline() {
     if (html_time_line_items[index].dataset.doctype == "Comment") {
       add_reply_button(html_time_line_items[index]);
     }
-  }
-
-  // Add the visibility icons to the comments
-  for (let index = 0; index < html_time_line_items.length; index++) {
-    // if the comment visibility are already added, skip
-    if (html_time_line_items[index].querySelector(".visibility-info")) {
-      return;
-    }
-    update_time_line(html_time_line_items[index]);
   }
 }
 
