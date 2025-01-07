@@ -49,8 +49,10 @@ def add_comment_override(
         follow_document(comment.reference_doctype, comment.reference_name, frappe.session.user)
 
     try:
-        # Notify thread participants
-        if custom_reply_to:
+        # Notify thread participants if the comment is visible to everyone
+        # and the comment is a reply to another comment
+        # For 'visible to mentioned' comments, the notification is sent to mentioned by default
+        if custom_reply_to and custom_visibility == "Visible to everyone":
             mention_users = get_thread_participants(custom_reply_to)
             if mention_users:
                 notification_doc = {
