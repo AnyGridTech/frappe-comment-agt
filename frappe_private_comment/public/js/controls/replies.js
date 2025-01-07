@@ -43,7 +43,9 @@ function render_replies(commentSelector, replies) {
                                     <span>&nbsp; ${frappe.datetime.comment_when(reply.creation)}</span>
                                 </span>
                               ${update_the_comment_visibility(
-                                reply.comment_email === frappe.session.user ? reply.custom_visibility : null
+                                frappe.session.user === "Administrator" || reply.comment_email === frappe.session.user
+                                  ? reply.custom_visibility
+                                  : null
                               )}
                               </div>
                             </div>
