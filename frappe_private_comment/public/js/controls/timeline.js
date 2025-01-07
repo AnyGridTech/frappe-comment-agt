@@ -52,7 +52,7 @@ function add_visibility_icons(time_line_item, visibility) {
 
 function update_comments_timeline() {
   // Select all the timeline comments and replies
-  let html_time_line_items = document.querySelectorAll(".new-timeline > .timeline-items .timeline-item");
+  let html_time_line_items = document.querySelectorAll(".new-timeline > .timeline-items > .timeline-item");
 
   // Add the visibility icons to the comments
   for (let index = 0; index < html_time_line_items.length; index++) {
