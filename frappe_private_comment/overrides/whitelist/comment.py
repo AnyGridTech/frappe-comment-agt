@@ -30,6 +30,7 @@ def add_comment_override(
     reference_doc.check_permission()
 
     comment = frappe.new_doc("Comment")
+    mentions = get_mention_user(content)
     comment.update(
         {
             "comment_type": "Comment",
@@ -39,7 +40,7 @@ def add_comment_override(
             "comment_by": comment_by,
             "content": extract_images_from_html(reference_doc, content, is_private=True),
             "custom_visibility": custom_visibility,
-            "custom_mentions": get_mention_user(content),
+            "custom_mentions": mentions,
             "custom_reply_to": custom_reply_to,
         }
     )
@@ -53,8 +54,8 @@ def add_comment_override(
         # and the comment is a reply to another comment
         # For 'visible to mentioned' comments, the notification is sent to mentioned by default
         if custom_reply_to and custom_visibility == "Visible to everyone":
-            mention_users = get_thread_participants(custom_reply_to)
-            if mention_users:
+            participants = get_thread_participants(custom_reply_to)
+            if participants:
                 notification_doc = {
                     "type": "Mention",
                     "document_type": reference_doctype,
@@ -64,9 +65,11 @@ def add_comment_override(
                     "email_content": content,
                 }
 
+                for mention in mentions:
+                    participants.discard(mention["user"])
                 # Remove the current user from notification recipients
-                mention_users.discard(frappe.session.user)
-                enqueue_create_notification(list(mention_users), notification_doc)
+                participants.discard(frappe.session.user)
+                enqueue_create_notification(list(participants), notification_doc)
     except Exception as e:
         frappe.log_error(
             "Error sending Comment Thread notification",
