@@ -156,10 +156,15 @@ function addThreadedReply(commentSelector, doctype, docname) {
 
 function handle_reply(time_line_item) {
   // if on Edit Mode, click on `Dismiss` button
-  const dismissButton = $(time_line_item).find(".custom-actions.save-open > button:nth-child(2)");
-  if (dismissButton.length) {
-    dismissButton.click();
+  const parentDismiss = $(time_line_item).find(".custom-actions.save-open > button:nth-child(2)");
+  if (parentDismiss.length) {
+    parentDismiss.click();
   }
+  const replyDismiss = $(time_line_item).find(".btn.cancel-edit");
+  if (replyDismiss.length) {
+    replyDismiss.click();
+  }
+
   const $timeLineItem = $(time_line_item);
   const replyingToName = $timeLineItem.find(".avatar.avatar-medium").attr("title");
   if ($timeLineItem.find(".reply-container").length) {
@@ -306,6 +311,10 @@ function handle_reply_delete(commentSelector) {
 }
 
 function handle_reply_edit(parentComment, commentSelector) {
+  const replyContainer = $(commentSelector).find(".reply-container");
+  if (replyContainer) {
+    replyContainer.remove();
+  }
   const $comment = $(commentSelector);
   const $readMode = $comment.find(".read-mode");
   const $editMode = $comment.find(".edit-mode");
