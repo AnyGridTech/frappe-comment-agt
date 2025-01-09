@@ -54,11 +54,16 @@ function render_replies(commentSelector, replies) {
                                 <p>${reply.content}</p>
                             </div>
                             <div class="edit-mode"></div>
-                        </div>
+                       </div>
                     </div>
                 </div>
             </div>
         `);
+
+    const $replyButton = $("<button>")
+      .addClass("btn btn-xs btn-link reply-btn")
+      .html('<i class="fa fa-reply"></i> Reply')
+      .on("click", () => handle_reply("#comment-" + reply.name));
 
     $replyContainer.append($replyContent);
 
@@ -108,7 +113,7 @@ function render_replies(commentSelector, replies) {
     if (reply.comment_email === frappe.session.user) {
       actionButtons.append(editButton);
     }
-    actionButtons.append(moreButton);
+    actionButtons.append($replyButton, moreButton);
     $replyContent.find(".text-muted").append(actionButtons);
   });
 
