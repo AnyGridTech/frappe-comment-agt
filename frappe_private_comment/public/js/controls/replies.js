@@ -10,7 +10,7 @@ function add_reply_button(time_line_item) {
   $(time_line_item).find(".custom-actions").append(replyButton);
 }
 
-function render_replies(commentSelector, commentId, allReplies) {
+function render_replies(commentSelector, commentId, allReplies, decrease_margin = false) {
   const replies = allReplies[commentId];
   if (!replies || Object.keys(replies).length === 0) {
     return;
@@ -64,6 +64,10 @@ function render_replies(commentSelector, commentId, allReplies) {
                 </div>
             </div>
         `);
+
+    if (decrease_margin) {
+      $replyContainer.css("margin-left", "55px");
+    }
 
     const $replyButton = $("<button>")
       .addClass("btn btn-xs btn-link reply-btn")
@@ -125,7 +129,7 @@ function render_replies(commentSelector, commentId, allReplies) {
   $comment.after($replyContainer);
 
   replies.forEach((reply) => {
-    render_replies("#comment-" + reply.name, reply.name, allReplies);
+    render_replies("#comment-" + reply.name, reply.name, allReplies, true);
   });
 }
 
