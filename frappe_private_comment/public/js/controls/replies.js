@@ -153,7 +153,7 @@ function addThreadedReply(commentSelector, doctype, docname) {
         return;
       }
 
-      render_replies(commentSelector, commentId, res.message);
+      render_replies(commentSelector, commentId, res.message, true);
     },
   });
 }
