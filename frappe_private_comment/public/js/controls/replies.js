@@ -33,7 +33,7 @@ function render_replies(commentSelector, commentId, allReplies, decrease_margin 
                         <use href="#icon-small-message"></use>
                     </svg>
                 </div>
-                <div class="timeline-item frappe-card" data-doctype="Comment" id="comment-${reply.name}" data-name="${
+                <div class="timeline-item frappe-card" data-doctype="Reply" id="comment-${reply.name}" data-name="${
       reply.name
     }">
                     <div class="timeline-content">
@@ -136,6 +136,7 @@ function render_replies(commentSelector, commentId, allReplies, decrease_margin 
 function addThreadedReply(commentSelector, doctype, docname) {
   const $comment = $(commentSelector);
   const commentId = $comment.data("name");
+  const isReply = $comment.data("doctype") === "Reply";
 
   frappe.call({
     method: "frappe_private_comment.overrides.whitelist.comment.get_all_replies",
@@ -153,7 +154,7 @@ function addThreadedReply(commentSelector, doctype, docname) {
         return;
       }
 
-      render_replies(commentSelector, commentId, res.message, true);
+      render_replies(commentSelector, commentId, res.message, isReply);
     },
   });
 }
