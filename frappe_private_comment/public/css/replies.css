@@ -46,7 +46,7 @@
     margin-left: 32px;
   }
 
-  .ql-editor {
+  .ql-editor.read-mode {
     padding-left: 40px;
   }
 }
