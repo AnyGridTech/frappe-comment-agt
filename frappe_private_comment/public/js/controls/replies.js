@@ -303,8 +303,6 @@ function handle_reply_delete(commentSelector) {
         if (r.exc) {
           frappe.msgprint(__("There was an error deleting the comment"));
         } else {
-          $comment.closest(".timeline-item").remove();
-          this.cur_frm?.footer.refresh();
           frappe.show_alert({
             message: __("Comment deleted"),
             indicator: "green",
