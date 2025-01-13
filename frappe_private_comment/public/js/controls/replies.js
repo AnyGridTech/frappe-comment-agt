@@ -1,3 +1,5 @@
+const REPLY_LEVEL_LIMIT = 7;
+
 function add_reply_button(time_line_item) {
   if ($(time_line_item).find(".custom-actions .reply-btn").length) {
     return;
@@ -10,7 +12,7 @@ function add_reply_button(time_line_item) {
   $(time_line_item).find(".custom-actions").append(replyButton);
 }
 
-function render_replies(commentSelector, commentId, allReplies, decrease_margin = false) {
+function render_replies(commentSelector, commentId, allReplies, decrease_margin = false, comment_level = 1) {
   const replies = allReplies[commentId];
   if (!replies || Object.keys(replies).length === 0) {
     return;
@@ -33,9 +35,9 @@ function render_replies(commentSelector, commentId, allReplies, decrease_margin 
                         <use href="#icon-small-message"></use>
                     </svg>
                 </div>
-                <div class="timeline-item frappe-card" data-doctype="Reply" id="comment-${reply.name}" data-name="${
+                <div class="timeline-item frappe-card" data-doctype="Reply" data-level="${comment_level}" id="comment-${
       reply.name
-    }">
+    }" data-name="${reply.name}">
                     <div class="timeline-content">
                         <div class="timeline-message-box">
                             <div>
@@ -122,20 +124,24 @@ function render_replies(commentSelector, commentId, allReplies, decrease_margin 
     if (reply.comment_email === frappe.session.user) {
       actionButtons.append(editButton);
     }
-    actionButtons.append($replyButton, moreButton);
+    if (comment_level < REPLY_LEVEL_LIMIT) {
+      actionButtons.append($replyButton);
+    }
+    actionButtons.append(moreButton);
     $replyContent.find(".text-muted").append(actionButtons);
   });
 
   $comment.after($replyContainer);
 
   replies.forEach((reply) => {
-    render_replies("#comment-" + reply.name, reply.name, allReplies, true);
+    render_replies("#comment-" + reply.name, reply.name, allReplies, true, comment_level + 1);
   });
 }
 
 function addThreadedReply(commentSelector, doctype, docname) {
   const $comment = $(commentSelector);
   const commentId = $comment.data("name");
+  const commentLevel = $comment.data("level") ?? 1;
   const isReply = $comment.data("doctype") === "Reply";
 
   frappe.call({
@@ -154,7 +160,7 @@ function addThreadedReply(commentSelector, doctype, docname) {
         return;
       }
 
-      render_replies(commentSelector, commentId, res.message, isReply);
+      render_replies(commentSelector, commentId, res.message, isReply, commentLevel + 1);
     },
   });
 }
