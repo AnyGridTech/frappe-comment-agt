@@ -19,6 +19,14 @@ class CustomFormTimeline extends FormTimeline {
 }
 
 frappe.ui.form.Footer = class extends frappe.ui.form.Footer {
+  constructor(opts) {
+    super(opts);
+    // Once the timeline is rendered, setup the replies
+    $(this.frm.wrapper).on("render_complete", () => {
+      this.setup_replies();
+    });
+  }
+
   make_timeline() {
     this.frm.timeline = new CustomFormTimeline({
       parent: this.wrapper.find(".timeline"),
