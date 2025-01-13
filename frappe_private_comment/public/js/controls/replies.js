@@ -27,7 +27,7 @@ function render_replies(commentSelector, commentId, allReplies, decrease_margin 
 
   replies.forEach((reply) => {
     const $replyContent = $(`
-            <div style="position: relative;">
+            <div class="reply-wrapper">
                 <div class="timeline-badge">
                     <svg class="icon icon-md">
                         <use href="#icon-small-message"></use>
