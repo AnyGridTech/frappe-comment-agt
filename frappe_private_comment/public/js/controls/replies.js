@@ -78,18 +78,15 @@ function render_replies(commentSelector, commentId, allReplies, decrease_margin 
 
     const actionButtons = $("<div>").addClass("comment-actions");
 
-    const moreButton = $("<div>")
-      .addClass("dropdown")
-      .append(
-        $("<button>")
-          .addClass("btn btn-xs btn-link dropdown-toggle")
-          .attr({
+    const moreButton = $("<a>")
+      .addClass("action-btn")
+      .attr({
             "data-toggle": "dropdown",
             "aria-haspopup": "true",
             "aria-expanded": "false",
           })
           .html('<svg class="icon icon-sm"><use href="#icon-dot-horizontal"></use></svg>')
-      );
+      ;
 
     const dropdownMenu = $("<div>")
       .addClass("dropdown-menu small dropdown-menu-right")
