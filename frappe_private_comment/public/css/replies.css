@@ -32,15 +32,17 @@
   padding-left: 0 !important;
   margin-left: 0px !important;
   border: 1px solid #ededed;
+  margin-bottom: 0px !important;
 
   .timeline-content {
-    padding-bottom: 2px;
+    padding-bottom: 0px !important;
     margin-left: 0px !important;
   }
 
   .timeline-message-box {
     margin-bottom: 14px !important;
     margin: 3.5px !important;
+    margin-bottom: 0px !important;
   }
 
   .timeline-user {
@@ -101,24 +103,32 @@
   .new-timeline>.timeline-items>.threaded-reply-container {
     overflow-x: scroll;
     display: flex;
-    width: 85%;
-    margin-left: 30px;
+    margin-left: 0 !important;
+    padding-left: 90px;
   }
 
   .new-timeline>.timeline-items>.threaded-reply-container>.vertical-line {
-    width: 20%;
     flex-shrink: 0;
+    left: 60px !important;
   }
 
   .threaded-reply-container {
     position: relative;
     display: flex;
+    flex-direction: column;
   }
 
   .vertical-line {
     position: relative;
     flex-shrink: 0;
+    position: absolute;
+    top: 10px;
+    background-color: #F3F3F3;
+    border-radius: 999px;
+    width: 1px !important;
+    padding: 0px !important;
   }
+
 
   .reply-wrapper {
     min-width: 600px;
