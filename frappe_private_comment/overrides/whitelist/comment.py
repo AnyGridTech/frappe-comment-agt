@@ -64,7 +64,7 @@ def add_comment_override(
                     "document_name": reference_name,
                     "subject": f"{frappe.bold(comment_by)} replied in thread: {clean_email_html(comment_content)}",
                     "from_user": frappe.session.user,
-                    "email_content": "",
+                    "email_content": content,
                 }
 
                 for mention in mentions:
