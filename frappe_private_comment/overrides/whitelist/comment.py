@@ -4,6 +4,7 @@ import frappe
 from frappe.core.doctype.file.utils import extract_images_from_html
 from frappe.desk.doctype.notification_log.notification_log import enqueue_create_notification
 from frappe.desk.form.document_follow import follow_document
+from frappe.utils.html_utils import clean_email_html
 
 from frappe_private_comment.helpers.comment import (
     filter_comments_by_visibility,
@@ -31,6 +32,7 @@ def add_comment_override(
 
     comment = frappe.new_doc("Comment")
     mentions = get_mention_user(content)
+    comment_content = extract_images_from_html(reference_doc, content, is_private=True)
     comment.update(
         {
             "comment_type": "Comment",
@@ -38,7 +40,7 @@ def add_comment_override(
             "reference_name": reference_name,
             "comment_email": comment_email,
             "comment_by": comment_by,
-            "content": extract_images_from_html(reference_doc, content, is_private=True),
+            "content": comment_content,
             "custom_visibility": custom_visibility,
             "custom_mentions": mentions,
             "custom_reply_to": custom_reply_to,
@@ -60,9 +62,9 @@ def add_comment_override(
                     "type": "Mention",
                     "document_type": reference_doctype,
                     "document_name": reference_name,
-                    "subject": "New thread activity",
+                    "subject": f"{frappe.bold(comment_by)} replied in thread: {clean_email_html(comment_content)}",
                     "from_user": frappe.session.user,
-                    "email_content": content,
+                    "email_content": "",
                 }
 
                 for mention in mentions:
