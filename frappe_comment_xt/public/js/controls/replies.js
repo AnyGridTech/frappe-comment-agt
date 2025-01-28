@@ -35,9 +35,9 @@ function render_replies(commentSelector, commentId, allReplies, decrease_margin 
                         <use href="#icon-small-message"></use>
                     </svg>
                 </div>
-                <div class="timeline-item frappe-card" data-doctype="Reply" data-level="${comment_level}" id="comment-${
-      reply.name
-    }" data-name="${reply.name}">
+                <div class="timeline-item frappe-card" data-doctype="Reply" data-level="${comment_level}" data-visibility="${
+      reply.custom_visibility
+    }" id="comment-${reply.name}" data-name="${reply.name}">
                     <div class="timeline-content">
                         <div class="timeline-message-box">
                             <div>
