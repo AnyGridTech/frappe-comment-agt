@@ -79,7 +79,7 @@ frappe.ui.form.Footer = class extends frappe.ui.form.Footer {
     const $timelineItems = $("div.new-timeline > div.timeline-items");
 
     frappe.call({
-      method: "frappe_private_comment.overrides.whitelist.comment.get_all_replies",
+      method: "frappe_comment_xt.overrides.whitelist.comment.get_all_replies",
       args: {
         reference_name: docname,
         reference_doctype: doctype,

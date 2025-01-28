@@ -6,7 +6,7 @@ from frappe.desk.doctype.notification_log.notification_log import enqueue_create
 from frappe.desk.form.document_follow import follow_document
 from frappe.utils.html_utils import clean_email_html
 
-from frappe_private_comment.helpers.comment import (
+from frappe_comment_xt.helpers.comment import (
     filter_comments_by_visibility,
     get_mention_user,
     get_thread_participants,
