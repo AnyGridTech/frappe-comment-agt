@@ -1,5 +1,5 @@
 app_name = "frappe_comment_xt"
-app_title = "Frappe Private Comment"
+app_title = "Frappe Comment Xt"
 app_publisher = "rtCamp"
 app_description = "Enhancing the default comments function in Frappe"
 app_email = "frappe@rtcamp.com"
