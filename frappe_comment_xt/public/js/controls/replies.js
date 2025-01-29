@@ -140,7 +140,7 @@ function addThreadedReply(commentSelector, doctype, docname) {
   const isReply = $comment.data("doctype") === "Reply";
 
   frappe.call({
-    method: "frappe_private_comment.overrides.whitelist.comment.get_all_replies",
+    method: "frappe_comment_xt.overrides.whitelist.comment.get_all_replies",
     args: {
       reference_name: docname,
       reference_doctype: doctype,
