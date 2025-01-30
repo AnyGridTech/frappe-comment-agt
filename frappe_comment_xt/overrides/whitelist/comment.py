@@ -4,13 +4,10 @@ import frappe
 from frappe.core.doctype.file.utils import extract_images_from_html
 from frappe.desk.doctype.notification_log.notification_log import enqueue_create_notification
 from frappe.desk.form.document_follow import follow_document
+from frappe.utils import strip_html_tags
 from frappe.utils.html_utils import clean_email_html
 
-from frappe_comment_xt.helpers.comment import (
-    filter_comments_by_visibility,
-    get_mention_user,
-    get_thread_participants,
-)
+from frappe_comment_xt.helpers.comment import filter_comments_by_visibility, get_mention_user, get_thread_participants
 
 if TYPE_CHECKING:
     from frappe.core.doctype.comment.comment import Comment
@@ -62,7 +59,7 @@ def add_comment_override(
                     "type": "Mention",
                     "document_type": reference_doctype,
                     "document_name": reference_name,
-                    "subject": f"{frappe.bold(comment_by)} replied in thread: {clean_email_html(comment_content)}",
+                    "subject": f"{frappe.bold(comment_by)} replied in thread: {strip_html_tags(clean_email_html(comment_content))}",
                     "from_user": frappe.session.user,
                     "email_content": content,
                 }
