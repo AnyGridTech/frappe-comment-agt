@@ -5,8 +5,8 @@
 2. Install the app on the site.
 
 ```bash
-bench get-app https://github.com/rtCamp/frappe-private-comment
-bench --site [site-name] install-app frappe_private_comment
+bench get-app https://github.com/rtCamp/frappe-comment-xt
+bench --site [site-name] install-app frappe_comment_xt
 ```
 
 2. Set up [pre-commit](https://pre-commit.com/) in the app.
