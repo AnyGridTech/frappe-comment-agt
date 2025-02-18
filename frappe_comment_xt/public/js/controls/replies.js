@@ -1,6 +1,8 @@
+// Maximum limit of nested threads allowed
 const REPLY_LEVEL_LIMIT = 7;
 
 function add_reply_button(time_line_item) {
+  /* Add reply button to the parent comment */
   if ($(time_line_item).find(".custom-actions .reply-btn").length) {
     return;
   }
@@ -13,6 +15,12 @@ function add_reply_button(time_line_item) {
 }
 
 function render_replies(commentSelector, commentId, allReplies, decrease_margin = false, comment_level = 1) {
+  /*
+   * Recursively render replies for a comment
+   * allReplies: an object with commentId as key and an array of replies as value
+   * decrease_margin: manually decrease the margin of the threaded reply container
+   * comment_level: keep track of the depth of the comment
+   */
   const replies = allReplies[commentId];
   if (!replies || Object.keys(replies).length === 0) {
     return;
@@ -134,6 +142,10 @@ function render_replies(commentSelector, commentId, allReplies, decrease_margin 
 }
 
 function addThreadedReply(commentSelector, doctype, docname) {
+  /*
+   * Entry point to fetch and render replies for a comment
+   * This will render the comment tree starting the given comment
+   */
   const $comment = $(commentSelector);
   const commentId = $comment.data("name");
   const commentLevel = $comment.data("level") ?? 1;
@@ -161,6 +173,9 @@ function addThreadedReply(commentSelector, doctype, docname) {
 }
 
 function handle_reply(time_line_item) {
+  /*
+   * Handle the reply button click event
+   */
   // if on Edit Mode, click on `Dismiss` button
   const parentDismiss = $(time_line_item).find(".custom-actions.save-open > button:nth-child(2)");
   if (parentDismiss.length) {
@@ -258,6 +273,9 @@ function handle_reply(time_line_item) {
 }
 
 function submit_reply(time_line_item, content, visibility) {
+  /*
+   * Submit the reply to the server and update the comments tree for the comment
+   */
   frappe.call({
     method: "frappe.desk.form.utils.add_comment",
     args: {
@@ -281,6 +299,9 @@ function submit_reply(time_line_item, content, visibility) {
 }
 
 function handle_reply_copy(commentSelector) {
+  /*
+   * Copy the comment URL to the clipboard
+   */
   const $comment = $(commentSelector);
   const commentId = $comment.data("name");
   const currentUrl =
@@ -290,6 +311,9 @@ function handle_reply_copy(commentSelector) {
 }
 
 function handle_reply_delete(commentSelector) {
+  /*
+   * Delete the comment
+   */
   const $comment = $(commentSelector);
   const commentId = $comment.data("name");
 
@@ -315,6 +339,10 @@ function handle_reply_delete(commentSelector) {
 }
 
 function handle_reply_edit(parentComment, commentSelector) {
+  /*
+   * Edit the comment, prepare the edit mode and hide the read mode
+   * Also handle the save and dismiss actions for the edit mode
+   */
   const replyContainer = $(commentSelector).find(".reply-container");
   if (replyContainer) {
     replyContainer.remove();
