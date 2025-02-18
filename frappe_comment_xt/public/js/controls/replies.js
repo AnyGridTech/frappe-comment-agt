@@ -172,7 +172,7 @@ function handle_reply(time_line_item) {
   }
 
   const $timeLineItem = $(time_line_item);
-  const replyingToName = $timeLineItem.find(".avatar.avatar-medium").attr("title");
+  const replyingToName = frappe.utils.escape_html($timeLineItem.find(".avatar.avatar-medium").attr("title"));
   if ($timeLineItem.find(".reply-container").length) {
     return;
   }
