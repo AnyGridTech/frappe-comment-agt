@@ -60,6 +60,10 @@ def add_comments_in_timeline(doc, docinfo):
 
 
 def filter_comments_by_visibility(comments, user):
+    """
+    Filter comments based on the visibility settings
+    Only show comments that the user is allowed to see
+    """
     filtered_comments = []
 
     if user != "Administrator":
