@@ -74,6 +74,7 @@ frappe.ui.form.Footer = class extends frappe.ui.form.Footer {
   }
 
   setup_replies() {
+    // A public interface to the footer to render threaded replies
     const docname = this.frm.docname;
     const doctype = this.frm.doctype;
     const $timelineItems = $("div.new-timeline > div.timeline-items");
