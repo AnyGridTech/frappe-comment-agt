@@ -2,7 +2,7 @@
 
 <div align="center">
 <img src="comment.png" height="128" alt="Logo">
-<h2>Frappe Comment xt</h2>
+<h2>Frappe Comment AGT</h2>
 </div>
 
 Frappe app that allows controlling comment visibility for tagged user and support multiple level replies. Helpful to add private comments in a discussion on any doc’s single view.
@@ -33,6 +33,8 @@ bench --site [site-name] install-app frappe_comment_xt
 ## Planned Features
 
 - Emoji reactions to comments
+- Maximum time for edit and delete
+- Role based comment view permission (eg. Everyone that is marked as 'Employee' can see the comment)
 
 ## Contribution Guide
 
