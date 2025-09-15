@@ -1,4 +1,4 @@
-app_name = "frappe_comment_xt"
+app_name = "frappe_comment_agt"
 app_title = "Frappe Comment Xt"
 app_publisher = "rtCamp"
 app_description = "Enhancing the default comments function in Frappe"
@@ -12,20 +12,20 @@ app_license = "GNU AFFERO GENERAL PUBLIC LICENSE (v3)"
 
 # include js, css files in header of desk.html
 app_include_css = [
-    "/assets/frappe_comment_xt/css/frappe_comment_xt.css",
-    "/assets/frappe_comment_xt/css/replies.css",
+    "/assets/frappe_comment_agt/css/frappe_comment_agt.css",
+    "/assets/frappe_comment_agt/css/replies.css",
 ]
 app_include_js = [
-    "/assets/frappe_comment_xt/js/frappe_comment_xt.js",
+    "/assets/frappe_comment_agt/js/frappe_comment_agt.js",
     "footer.bundle.js",
 ]
 
 # include js, css files in header of web template
-# web_include_css = "/assets/frappe_comment_xt/css/frappe_comment_xt.css"
-# web_include_js = "/assets/frappe_comment_xt/js/frappe_comment_xt.js"
+# web_include_css = "/assets/frappe_comment_agt/css/frappe_comment_agt.css"
+# web_include_js = "/assets/frappe_comment_agt/js/frappe_comment_agt.js"
 
 # include custom scss in every website theme (without file extension ".scss")
-# website_theme_scss = "frappe_comment_xt/public/scss/website"
+# website_theme_scss = "frappe_comment_agt/public/scss/website"
 
 # include js, css files in header of web form
 # webform_include_js = {"doctype": "public/js/doctype.js"}
@@ -43,7 +43,7 @@ app_include_js = [
 # Svg Icons
 # ------------------
 # include app icons in desk
-# app_include_icons = "frappe_comment_xt/public/icons.svg"
+# app_include_icons = "frappe_comment_agt/public/icons.svg"
 
 # Home Pages
 # ----------
@@ -67,43 +67,43 @@ app_include_js = [
 
 # add methods and filters to jinja environment
 # jinja = {
-# 	"methods": "frappe_comment_xt.utils.jinja_methods",
-# 	"filters": "frappe_comment_xt.utils.jinja_filters"
+# 	"methods": "frappe_comment_agt.utils.jinja_methods",
+# 	"filters": "frappe_comment_agt.utils.jinja_filters"
 # }
 
 # Installation
 # ------------
 
-# before_install = "frappe_comment_xt.install.before_install"
-# after_install = "frappe_comment_xt.install.after_install"
+# before_install = "frappe_comment_agt.install.before_install"
+# after_install = "frappe_comment_agt.install.after_install"
 
 # Uninstallation
 # ------------
 
-# before_uninstall = "frappe_comment_xt.uninstall.before_uninstall"
-# after_uninstall = "frappe_comment_xt.uninstall.after_uninstall"
+# before_uninstall = "frappe_comment_agt.uninstall.before_uninstall"
+# after_uninstall = "frappe_comment_agt.uninstall.after_uninstall"
 
 # Integration Setup
 # ------------------
 # To set up dependencies/integrations with other apps
 # Name of the app being installed is passed as an argument
 
-# before_app_install = "frappe_comment_xt.utils.before_app_install"
-# after_app_install = "frappe_comment_xt.utils.after_app_install"
+# before_app_install = "frappe_comment_agt.utils.before_app_install"
+# after_app_install = "frappe_comment_agt.utils.after_app_install"
 
 # Integration Cleanup
 # -------------------
 # To clean up dependencies/integrations with other apps
 # Name of the app being uninstalled is passed as an argument
 
-# before_app_uninstall = "frappe_comment_xt.utils.before_app_uninstall"
-# after_app_uninstall = "frappe_comment_xt.utils.after_app_uninstall"
+# before_app_uninstall = "frappe_comment_agt.utils.before_app_uninstall"
+# after_app_uninstall = "frappe_comment_agt.utils.after_app_uninstall"
 
 # Desk Notifications
 # ------------------
 # See frappe.core.notifications.get_notification_config
 
-# notification_config = "frappe_comment_xt.notifications.get_notification_config"
+# notification_config = "frappe_comment_agt.notifications.get_notification_config"
 
 # Permissions
 # -----------
@@ -122,7 +122,7 @@ app_include_js = [
 # Override standard doctype classes
 
 override_doctype_class = {
-    "Notification Log": "frappe_comment_xt.overrides.notification_log_override.NotificationLogOverride"
+    "Notification Log": "frappe_comment_agt.overrides.notification_log_override.NotificationLogOverride"
 }
 
 # Document Events
@@ -142,19 +142,19 @@ override_doctype_class = {
 
 # scheduler_events = {
 # 	"all": [
-# 		"frappe_comment_xt.tasks.all"
+# 		"frappe_comment_agt.tasks.all"
 # 	],
 # 	"daily": [
-# 		"frappe_comment_xt.tasks.daily"
+# 		"frappe_comment_agt.tasks.daily"
 # 	],
 # 	"hourly": [
-# 		"frappe_comment_xt.tasks.hourly"
+# 		"frappe_comment_agt.tasks.hourly"
 # 	],
 # 	"weekly": [
-# 		"frappe_comment_xt.tasks.weekly"
+# 		"frappe_comment_agt.tasks.weekly"
 # 	],
 # 	"monthly": [
-# 		"frappe_comment_xt.tasks.monthly"
+# 		"frappe_comment_agt.tasks.monthly"
 # 	],
 # }
 
@@ -176,14 +176,14 @@ fixtures = [
 # Testing
 # -------
 
-# before_tests = "frappe_comment_xt.install.before_tests"
+# before_tests = "frappe_comment_agt.install.before_tests"
 
 # Overriding Methods
 # ------------------------------
 #
 override_whitelisted_methods = {
-    "frappe.desk.form.utils.add_comment": "frappe_comment_xt.overrides.whitelist.comment.add_comment_override",
-    "frappe.desk.form.utils.update_comment": "frappe_comment_xt.overrides.whitelist.comment.update_comment_override",
+    "frappe.desk.form.utils.add_comment": "frappe_comment_agt.overrides.whitelist.comment.add_comment_override",
+    "frappe.desk.form.utils.update_comment": "frappe_comment_agt.overrides.whitelist.comment.update_comment_override",
 }
 #
 # each overriding function accepts a `data` argument;
@@ -203,13 +203,13 @@ override_whitelisted_methods = {
 
 # Request Events
 # ----------------
-# before_request = ["frappe_comment_xt.utils.before_request"]
-# after_request = ["frappe_comment_xt.utils.after_request"]
+# before_request = ["frappe_comment_agt.utils.before_request"]
+# after_request = ["frappe_comment_agt.utils.after_request"]
 
 # Job Events
 # ----------
-# before_job = ["frappe_comment_xt.utils.before_job"]
-# after_job = ["frappe_comment_xt.utils.after_job"]
+# before_job = ["frappe_comment_agt.utils.before_job"]
+# after_job = ["frappe_comment_agt.utils.after_job"]
 
 # User Data Protection
 # --------------------
@@ -239,7 +239,7 @@ override_whitelisted_methods = {
 # --------------------------------
 
 # auth_hooks = [
-# 	"frappe_comment_xt.auth.validate"
+# 	"frappe_comment_agt.auth.validate"
 # ]
 
 # Automatically update python controller files with type annotations for this app.
