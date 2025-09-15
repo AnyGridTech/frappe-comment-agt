@@ -20,7 +20,7 @@ Select visibility for comments from:
 1. Get the app
 
 ```bash
-bench get-app https://github.com/rtCamp/frappe-comment-xt.git
+bench get-app https://github.com/AnyGridTech/frappe-comment-agt.git
 ```
 
 2. Install the app on your site
