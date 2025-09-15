@@ -1,7 +1,6 @@
 
 
 <div align="center">
-<img src="comment.png" height="128" alt="Logo">
 <h2>Frappe Comment AGT</h2>
 </div>
 
