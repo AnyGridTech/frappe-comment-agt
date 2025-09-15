@@ -2,6 +2,7 @@
 
 <div align="center">
 <h2>Frappe Comment AGT</h2>
+<h3>Forked from Frappe Comment XT</h3>
 </div>
 
 Frappe app that allows controlling comment visibility for tagged user and support multiple level replies. Helpful to add private comments in a discussion on any doc’s single view.
