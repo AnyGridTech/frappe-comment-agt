@@ -1,4 +1,4 @@
-frappe.require(["/assets/frappe_comment_xt/js/controls/replies.js"]);
+frappe.require(["/assets/frappe_comment_agt/js/controls/replies.js"]);
 
 /**Enable the HTML Editor field preview mode by default using the provided function */
 const time_line_interval_loop = setInterval(() => {
@@ -101,7 +101,7 @@ function update_time_line(time_line_item) {
   }
 
   frappe.call({
-    method: "frappe_comment_xt.overrides.whitelist.comment.get_comment_visibility",
+    method: "frappe_comment_agt.overrides.whitelist.comment.get_comment_visibility",
     args: {
       name: time_line_item.dataset.name,
     },

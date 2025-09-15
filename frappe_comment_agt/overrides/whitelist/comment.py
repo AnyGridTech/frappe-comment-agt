@@ -7,7 +7,7 @@ from frappe.desk.form.document_follow import follow_document
 from frappe.utils import strip_html_tags
 from frappe.utils.html_utils import clean_email_html
 
-from frappe_comment_xt.helpers.comment import filter_comments_by_visibility, get_mention_user, get_thread_participants
+from frappe_comment_agt.helpers.comment import filter_comments_by_visibility, get_mention_user, get_thread_participants
 
 if TYPE_CHECKING:
     from frappe.core.doctype.comment.comment import Comment

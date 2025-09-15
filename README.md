@@ -28,7 +28,7 @@ bench get-app https://github.com/rtCamp/frappe-comment-xt.git
 2. Install the app on your site
 
 ```bash
-bench --site [site-name] install-app frappe_comment_xt
+bench --site [site-name] install-app frappe_comment_agt
 ```
 ## Planned Features
 
