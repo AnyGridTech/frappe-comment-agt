@@ -6,7 +6,6 @@
 
 Frappe app that allows controlling comment visibility for tagged user and support multiple level replies. Helpful to add private comments in a discussion on any doc’s single view.
 <div align="center">
-<img src="https://github.com/rtCamp/comment-enhancer/assets/26240780/0de97ea3-3e96-4ea9-8184-19b92aae47a5" alt="Frappe Comment Xt Featured image" />
 <img src="https://github.com/user-attachments/assets/2dcd1421-aec5-4d2a-bd23-ecdad3ba3e49" alt="Multiple threaded replies" />
 </div>
 <br />

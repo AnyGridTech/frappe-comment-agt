@@ -1,7 +1,8 @@
 [project]
 name = "frappe_comment_agt"
 authors = [
-    { name = "rtCamp", email = "frappe@rtcamp.com"}
+    { name = "rtCamp", email = "frappe@rtcamp.com"}, # Original Author
+    { name = "AnyGrid Tech", email = "lgotcfg@gmail.com" }  # Maintainer
 ]
 description = "Enhancing the default comments function in Frappe"
 requires-python = ">=3.10"
